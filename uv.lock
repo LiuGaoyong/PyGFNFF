@@ -27,6 +27,22 @@ wheels = [
 ]
 
 [[package]]
+name = "build"
+version = "1.2.2.post1"
+source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "colorama", marker = "os_name == 'nt'" },
+    { name = "importlib-metadata", marker = "python_full_version < '3.10.2'" },
+    { name = "packaging" },
+    { name = "pyproject-hooks" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://mirror.nju.edu.cn/pypi/web/packages/7d/46/aeab111f8e06793e4f0e421fcad593d547fb8313b50990f31681ee2fb1ad/build-1.2.2.post1.tar.gz", hash = "sha256:b36993e92ca9375a219c99e606a122ff365a760a2d4bba0caa09bd5278b608b7" }
+wheels = [
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/84/c2/80633736cd183ee4a62107413def345f7e6e3c01563dbca1417363cf957e/build-1.2.2.post1-py3-none-any.whl", hash = "sha256:1d61c0887fa860c01971625baae8bdd338e517b836a2f70dd1f7aa3a6b2fc5b5" },
+]
+
+[[package]]
 name = "charset-normalizer"
 version = "3.4.2"
 source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
@@ -98,6 +114,32 @@ wheels = [
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/2c/9d/9bf2b005138e7e060d7ebdec7503d0ef3240141587651f4b445bdf7286c2/charset_normalizer-3.4.2-cp39-cp39-win32.whl", hash = "sha256:43e0933a0eff183ee85833f341ec567c0980dae57c464d8a508e1b2ceb336471" },
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/6d/24/5849d46cf4311bbf21b424c443b09b459f5b436b1558c04e45dbb7cc478b/charset_normalizer-3.4.2-cp39-cp39-win_amd64.whl", hash = "sha256:d11b54acf878eef558599658b0ffca78138c8c3655cf4f3a4a673c437e67732e" },
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/20/94/c5790835a017658cbfabd07f3bfb549140c3ac458cfc196323996b10095a/charset_normalizer-3.4.2-py3-none-any.whl", hash = "sha256:7f56930ab0abd1c45cd15be65cc741c28b1c9a34876ce8c17a2fa107810c0af0" },
+]
+
+[[package]]
+name = "cmake"
+version = "4.0.3"
+source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirror.nju.edu.cn/pypi/web/packages/25/3f/30c0f44ec5d727f547c35510ae479053abf56bed24b08f3e128f93d09905/cmake-4.0.3.tar.gz", hash = "sha256:215732f09ea8a7088fe1ab46bbd61669437217278d709fd3851bf8211e8c59e3" }
+wheels = [
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/c3/d2/5579b66d4421ab11dd00f32f4184be383a74e28ad0685a6604e0e7a8fd29/cmake-4.0.3-py3-none-macosx_10_10_universal2.whl", hash = "sha256:f2adfb459747025f40f9d3bdd1f3a485d43e866c0c4eb66373d1fcd666b13e4a" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/67/4d/410c3ebb4a46a236cbc0e3202f5507483ce24c96c1d4a73445675f11b402/cmake-4.0.3-py3-none-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:04c40c92fdcaa96c66a5731b5b3fbbdf87da99cc68fdd30ff30b90c34d222986" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/77/a7/f845c1e129ad37059612e5d66ffe3dac824fdfd7dec58918a802f38650ff/cmake-4.0.3-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:d41b83d061bcc375a7a5f2942ba523a7563368d296d91260f9d8a53a10f5e5e5" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/45/ee/750dae28fa12493052c44f744affbfeff0f35a526b4346bd86050e9903e5/cmake-4.0.3-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:434f84fdf1e21578974876b8414dc47afeaea62027d9adc37a943a6bb08eb053" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/23/1e/05b08c18145cd8e5ad3f506bfa21fe5277c00faf9052b3fb9bf6d279df42/cmake-4.0.3-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:beec48371a4b906fe398758ded5df57fc16e9bb14fd34244d9d66ee35862fb9f" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/db/b5/578e5b50cb848775aee4e04ceecef3c6595c30fb5fe0642a14eaafa02597/cmake-4.0.3-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:47dc28bee6cfb4de00c7cf7e87d565b5c86eb4088da81b60a49e214fcdd4ffda" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/42/7d/e4cdb9903b971dbbab1127e96bab86d3d77cedbb637f47a8e44ec02c3672/cmake-4.0.3-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:e10fdc972b3211915b65cc89e8cd24e1a26c9bd684ee71c3f369fb488f2c4388" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/60/cb/1e4d8baab7c946f809d6c59914428c10acaf39d9f4b52e1dffff834a9f0a/cmake-4.0.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d840e780c48c5df1330879d50615176896e8e6eee554507d21ce8e2f1a5f0ff8" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/cb/3a/ff653130b91d73c172205ac10ad71c62a1474bd85ae110eec085e04aec08/cmake-4.0.3-py3-none-manylinux_2_31_armv7l.whl", hash = "sha256:6ef63bbabcbe3b89c1d80547913b6caceaad57987a27e7afc79ebc88ecd829e4" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/7a/6f/514ba65cf1e2d0a80a97c3c4a2ae3805bf8cb3286de41b864b03b44ca47a/cmake-4.0.3-py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:67103f2bcce8f57b8705ba8e353f18fdc3684a346eee97dc5f94d11575a424c6" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/83/b9/49f847fa09b48110cc0f38b72720f979912ac69742de784998b2e36fda18/cmake-4.0.3-py3-none-musllinux_1_1_i686.whl", hash = "sha256:880a1e1ae26d440d7e4f604fecbf839728ca7b096c870f2e7359855cc4828532" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/c0/d8/bbd8eb74bb6c972572293f043a5cd5a56ec9791f8c46ccfbcf53a84aa556/cmake-4.0.3-py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:c403b660bbff1fd4d7f1c5d9e015ea27566e49ca9461e260c9758f2fd4e5e813" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/df/a4/aebacccbcab31a1896190d57ac3ad9fdeded18f6ce7634b24958c6de8090/cmake-4.0.3-py3-none-musllinux_1_1_s390x.whl", hash = "sha256:2a66ecdd4c3238484cb0c377d689c086a9b8b533e25329f73d21bd1c38f1ae86" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/a2/b3/42cd72162e7b466863ca4c033fb30ef51109b4eaef9686aa81b86f5afd8b/cmake-4.0.3-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:004e58b1a1a384c2ca799c9c41ac4ed86ac3b80129462992c43c1121f8729ffd" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/d4/4d/d81d27a0d86bf2e24e4574f672b17230db676be2dd878d747439f1f4abfa/cmake-4.0.3-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:133dbc33f995cb97a4456d83d67fa0a7a798f53f979454359140588baa928f43" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/5d/eb/c7736686066bbaacd06b69228a8cd3cbdac279a069658e4a646b3dee4a9c/cmake-4.0.3-py3-none-win32.whl", hash = "sha256:3e07bdd14e69ea67d1e67a4f5225ac2fd91ee9e349c440143cdddd7368be1f46" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/a6/03/70e3bfff49ee89b3e4a137b5504ad003b0cae8dbc291cb753228f55b4b9f/cmake-4.0.3-py3-none-win_amd64.whl", hash = "sha256:9a349ff2b4a7c63c896061676bc0f4e6994f373d54314d79ba3608ee7fa75442" },
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/50/ce/9cfee241950e700a3ac67a0dbbd26da24c7e252bd48c5af129586a4caadd/cmake-4.0.3-py3-none-win_arm64.whl", hash = "sha256:94a52e67b264a51089907c9e74ca5a9e2f3e65c57c457e0f40f02629a0de74d8" },
 ]
 
 [[package]]
@@ -327,6 +369,18 @@ wheels = [
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/cf/96/dfd52d0e603c2c03f1b6153a1989c810a2083f8ad282b8b80acf3fe736f8/fonttools-4.59.0-cp39-cp39-win32.whl", hash = "sha256:2e7cf8044ce2598bb87e44ba1d2c6e45d7a8decf56055b92906dc53f67c76d64" },
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/3b/75/efc6486371cc1125e41fc0c149d80605e17ce7fc28c05cc33d503b0bf41f/fonttools-4.59.0-cp39-cp39-win_amd64.whl", hash = "sha256:902425f5afe28572d65d2bf9c33edd5265c612ff82c69e6f83ea13eafc0dcbea" },
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/d0/9c/df0ef2c51845a13043e5088f7bb988ca6cd5bb82d5d4203d6a158aa58cf2/fonttools-4.59.0-py3-none-any.whl", hash = "sha256:241313683afd3baacb32a6bd124d0bce7404bc5280e12e291bae1b9bba28711d" },
+]
+
+[[package]]
+name = "importlib-metadata"
+version = "8.7.0"
+source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "zipp", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://mirror.nju.edu.cn/pypi/web/packages/76/66/650a33bd90f786193e4de4b3ad86ea60b53c89b669a5c7be931fac31cdb0/importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000" }
+wheels = [
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/20/b0/36bd937216ec521246249be3bf9855081de4c5e06a0c9b4219dbeda50373/importlib_metadata-8.7.0-py3-none-any.whl", hash = "sha256:e5dd1551894c77868a30651cef00984d50e1002d06942a7101d34870c5f02afd" },
 ]
 
 [[package]]
@@ -969,6 +1023,8 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "build" },
+    { name = "cmake" },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -983,6 +1039,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "build" },
+    { name = "cmake" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "ruff", specifier = ">=0.11.2" },
 ]
@@ -1003,6 +1061,15 @@ source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
 sdist = { url = "https://mirror.nju.edu.cn/pypi/web/packages/bb/22/f1129e69d94ffff626bdb5c835506b3a5b4f3d070f17ea295e12c2c6f60f/pyparsing-3.2.3.tar.gz", hash = "sha256:b9c13f1ab8b3b542f72e28f634bad4de758ab3ce4546e4301970ad6fa77c38be" }
 wheels = [
     { url = "https://mirror.nju.edu.cn/pypi/web/packages/05/e7/df2285f3d08fee213f2d041540fa4fc9ca6c2d44cf36d3a035bf2a8d2bcc/pyparsing-3.2.3-py3-none-any.whl", hash = "sha256:a749938e02d6fd0b59b356ca504a24982314bb090c383e3cf201c95ef7e2bfcf" },
+]
+
+[[package]]
+name = "pyproject-hooks"
+version = "1.2.0"
+source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirror.nju.edu.cn/pypi/web/packages/e7/82/28175b2414effca1cdac8dc99f76d660e7a4fb0ceefa4b4ab8f5f6742925/pyproject_hooks-1.2.0.tar.gz", hash = "sha256:1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8" }
+wheels = [
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/bd/24/12818598c362d7f300f18e74db45963dbcb85150324092410c8b49405e42/pyproject_hooks-1.2.0-py3-none-any.whl", hash = "sha256:9e5c6bfa8dcc30091c74b0cf803c81fdd29d94f01992a7707bc97babb1141913" },
 ]
 
 [[package]]
