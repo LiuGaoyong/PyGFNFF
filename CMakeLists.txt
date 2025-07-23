@@ -6,46 +6,33 @@ project(
   LANGUAGES C Fortran
 )
 
-# Python, Numpy & F2PY headers
-find_package(
-  Python REQUIRED
-  COMPONENTS Interpreter
-  Development.Module NumPy
-)
-execute_process(
-  COMMAND "${Python_EXECUTABLE}"
-  -c "import numpy.f2py; print(numpy.f2py.get_include())"
-  OUTPUT_VARIABLE F2PY_INCLUDE_DIR
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
+########################################################################
+################      External Fortran Library        ##################
+########################################################################
 # General configuration information
 # Compiler settings for GNU and Intel Fortran compilers
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-    set(dialect "-g -O0 -fbacktrace -ffree-line-length-none -fbacktrace")
-    set(bounds "-fbounds-check -ffpe-trap=invalid,zero,overflow")
+  set(dialect "-g -O0 -fbacktrace -ffree-line-length-none -fbacktrace")
+  set(bounds "-fbounds-check -ffpe-trap=invalid,zero,overflow")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-    set(dialect "-g -O2 -r8 -align array64byte -traceback")
-    set(bounds "-check all -fpe0")
+  set(dialect "-g -O2 -r8 -align array64byte -traceback")
+  set(bounds "-check all -fpe0")
 else()
-    message(FATAL_ERROR "Please use an Intel or GNU compiler!")
+  message(FATAL_ERROR "Please use an Intel or GNU compiler!")
 endif()
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${dialect}")
 set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${bounds}")
 option(WITH_OpenMP "Enable OpenMP support"                  FALSE)
 option(WITH_GBSA   "Build with implicit solvation support"  TRUE)
-option(WITH_TESTS  "Enable test binary build"               FALSE)
-option(build_exe   "Build an executable"                    FALSE)
-option(PYTHON_BINDINGS  "Create Python bindings"            FALSE)
 # OpenMP parallelization
 if(NOT TARGET "OpenMP::OpenMP_Fortran")
-    if (WITH_OpenMP)
-        find_package("OpenMP" REQUIRED)
-        add_compile_definitions(WITH_OpenMP)
-    else()
-        # Create dummy library
-        add_library("OpenMP::OpenMP_Fortran" INTERFACE IMPORTED)
-    endif()
+  if (WITH_OpenMP)
+    find_package("OpenMP" REQUIRED)
+    add_compile_definitions(WITH_OpenMP)
+  else()
+    # Create dummy library
+    add_library("OpenMP::OpenMP_Fortran" INTERFACE IMPORTED)
+  endif()
 endif()
 # Linear algebra (contains BLAS)
 if(NOT TARGET "LAPACK::LAPACK")
@@ -89,36 +76,19 @@ if(NOT EXISTS "${PROJECT_BINARY_DIR}/include")
 endif()
 
 
-set(f2py_module_name "gfnff")
-set(fortran_src_file "${f2pysrcs}")
-set(f2py_module_c "${f2py_module_name}module.c")
-# Convert to C file by F2PY
-add_custom_command(
-  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${f2py_module_c}"
-  COMMAND ${PYTHON_EXECUTABLE}  -m "numpy.f2py"
-          "${fortran_src_file}"
-          -m ${f2py_module_name}
-          --lower # Important
-  DEPENDS "${fortran_src_file}" # Fortran source
-)
+########################################################################
+################        Numpy F2PY Library          ####################
+########################################################################
+# Python, Numpy & F2PY headers, fortranobject dependencies
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module NumPy)
+include(UseF2Py)
+# Create the F2Py `numpyobject` library.
+f2py_object_library(f2py_object OBJECT)
 
-set(py_module_name "_pygfnff_lib")
-python_add_library(
-  ${py_module_name} MODULE
-  "${f2py_module_name}module.c"
-  "${F2PY_INCLUDE_DIR}/fortranobject.c"
-  "${fortran_src_file}" WITH_SOABI
-)
-target_include_directories(
-  ${py_module_name} PUBLIC
-  ${F2PY_INCLUDE_DIR}
-)
-target_link_libraries(
-  ${py_module_name} PUBLIC
-  Python::NumPy
-  ${flib}
-)
-install(
-  TARGETS ${py_module_name}
-  DESTINATION pygfnff
-)
+set(fortran_src_file "${f2pysrcs}")
+set(py_module_name "_pygfnfflib")
+f2py_generate_module("${py_module_name}" "${fortran_src_file}" OUTPUT_VARIABLE f_files)
+MESSAGE(STATUS "This var key = ${f_files}.")
+python_add_library("${py_module_name}" MODULE "${f_files}" "${fortran_src_file}" WITH_SOABI)
+target_link_libraries("${py_module_name}" PRIVATE f2py_object ${flib})
+install(TARGETS ${py_module_name} DESTINATION pygfnff)
