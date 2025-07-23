@@ -19,14 +19,63 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+# General configuration information
+add_subdirectory("config")
+option(WITH_OpenMP "Enable OpenMP support"                  FALSE)
+option(WITH_GBSA   "Build with implicit solvation support"  TRUE)
+option(WITH_TESTS  "Enable test binary build"               FALSE)
+option(build_exe   "Build an executable"                    FALSE)
+option(PYTHON_BINDINGS  "Create Python bindings"            FALSE)
+# OpenMP parallelization
+if(NOT TARGET "OpenMP::OpenMP_Fortran")
+    if (WITH_OpenMP)
+        find_package("OpenMP" REQUIRED)
+        add_compile_definitions(WITH_OpenMP)
+    else()
+        # Create dummy library
+        add_library("OpenMP::OpenMP_Fortran" INTERFACE IMPORTED)
+    endif()
+endif()
+# Linear algebra (contains BLAS)
+if(NOT TARGET "LAPACK::LAPACK")
+    find_package("LAPACK" REQUIRED)
+endif()
+set(
+  lib-deps
+  "OpenMP::OpenMP_Fortran"
+  "LAPACK::LAPACK"
+  "$<$<VERSION_LESS:${CMAKE_VERSION},3.20>:BLAS::BLAS>"
+)
+# Custom compile arguments
+IF(WITH_GBSA)
+    add_definitions(-DWITH_GBSA)
+ENDIF()
 
-# add_subdirectory("config")
+set(srcs)
 add_subdirectory("fortran")
-# Define two variables in this directory above:
-#   libs: dependencies
-#   srcs: sources
-add_library(gfnff STATIC ${srcs})
-target_link_libraries(gfnff PUBLIC "${libs}")
+add_library("${PROJECT_NAME}-lib" STATIC ${srcs})
+set_target_properties(
+  "${PROJECT_NAME}-lib"
+  PROPERTIES
+  POSITION_INDEPENDENT_CODE TRUE
+  OUTPUT_NAME "${PROJECT_NAME}"
+  VERSION "${PROJECT_VERSION}"
+  SOVERSION "${PROJECT_VERSION_MAJOR}"
+  WINDOWS_EXPORT_ALL_SYMBOLS TRUE
+  # Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include"
+)
+target_link_libraries("${PROJECT_NAME}-lib" PUBLIC "${lib-deps}")
+target_include_directories(
+  "${PROJECT_NAME}-lib"
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${module-dir}>
+)
+if(NOT EXISTS "${PROJECT_BINARY_DIR}/include")
+    file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/include")
+endif()
 
 
 # set(f2py_module_name "molalign")

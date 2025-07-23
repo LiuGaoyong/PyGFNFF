@@ -18,7 +18,7 @@
 #########################################################################################
 #########################################################################################
 
-# Add modules to the CMake build 
+# Add modules to the CMake build
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" PARENT_SCOPE)
 
@@ -37,24 +37,24 @@ set(module-dir "${module-dir}" PARENT_SCOPE)
 
 
 # Custom options
-option(WITH_OpenMP "Enable OpenMP support"    TRUE)
-option(WITH_GBSA   "Build with implicit solvation support" TRUE)
-option(WITH_TESTS  "Enable test binary build" TRUE)
-option(build_exe   "Build an executable"      FALSE)
-# For python bindings install scikit-build and pybind11
-option(PYTHON_BINDINGS  "Create Python bindings"  FALSE)
+# option(WITH_OpenMP "Enable OpenMP support"    TRUE)
+# option(WITH_GBSA   "Build with implicit solvation support" TRUE)
+# option(WITH_TESTS  "Enable test binary build" TRUE)
+# option(build_exe   "Build an executable"      FALSE)
+# # For python bindings install scikit-build and pybind11
+# option(PYTHON_BINDINGS  "Create Python bindings"  FALSE)
 
 #########################################################################################
 #########################################################################################
 
 # Set build type as CMake does not provide defaults
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  set(
+    set(
     CMAKE_BUILD_TYPE "RelWithDebInfo"
     CACHE STRING "Build type to be used."
     FORCE
   )
-  message(
+    message(
     STATUS
     "Setting build type to '${CMAKE_BUILD_TYPE}' as none was specified."
   )
@@ -67,7 +67,7 @@ set(fortran_minimal_versions "GNU;7.5" "Intel;19.0")
 check_minimal_compiler_version("Fortran" "${fortran_minimal_versions}")
 
 if(NOT DEFINED "${PROJECT_NAME}-dependency-method")
-  set(
+    set(
     "${PROJECT_NAME}-dependency-method"
     "subproject" "cmake" "pkgconf" "fetch"
   )
@@ -78,13 +78,13 @@ endif()
 
 # Compiler settings for GNU and Intel Fortran compilers
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  set(dialect "-g -O0 -fbacktrace -ffree-line-length-none -fbacktrace")
-  set(bounds "-fbounds-check -ffpe-trap=invalid,zero,overflow")
+    set(dialect "-g -O0 -fbacktrace -ffree-line-length-none -fbacktrace")
+    set(bounds "-fbounds-check -ffpe-trap=invalid,zero,overflow")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  set(dialect "-g -O2 -r8 -align array64byte -traceback")
-  set(bounds "-check all -fpe0")
+    set(dialect "-g -O2 -r8 -align array64byte -traceback")
+    set(bounds "-check all -fpe0")
 else()
-  message(FATAL_ERROR "Please use an Intel or GNU compiler!")
+    message(FATAL_ERROR "Please use an Intel or GNU compiler!")
 endif()
 
 # Apply the compiler flags
@@ -93,4 +93,3 @@ set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${dialect}" PARENT_SCOPE)
 
 #########################################################################################
 #########################################################################################
-
