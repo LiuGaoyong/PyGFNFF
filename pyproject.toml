@@ -1,0 +1,85 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "numpy", "charset_normalizer"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pygfnff"
+version = "v0.0.1alpha0"
+description = "A Python Library for GFN-FF."
+readme = "README.md"
+authors = [{ name = "Liu Gaoyong", email = "liugaoyong_88@163.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Environment :: Other Environment',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: GNU General Public License (GPL)',
+    'Natural Language :: English',
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: Python',
+    'Topic :: Scientific/Engineering :: Chemistry',
+    'Topic :: Software Development :: Libraries',
+]
+requires-python = ">=3.9, <=3.13"
+dependencies = ["ase", "numpy", "charset_normalizer", "typing-extensions"]
+
+[dependency-groups]
+dev = ["ruff>=0.11.2", "pytest>=8.3.5"]
+
+
+[project.urls]
+homepage = "https://github.com/LiuGaoyong/PyGFNFF"
+repository = "https://github.com/LiuGaoyong/PyGFNFF"
+
+# setuptools config
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["PyGFNFF"]
+namespaces = true
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+build-dir = "build/{wheel_tag}"
+cmake.version = ">=3.17.2"
+ninja.version = ">=1.10"
+
+
+# uv config
+[tool.uv]
+package = false
+[[tool.uv.index]]
+url = "https://mirror.nju.edu.cn/pypi/web/simple"
+default = true
+
+# pytest config
+[tool.pytest.ini_options]
+addopts = '--maxfail=1 -rf' # exit after 1 failures, report fail info
+testpaths = ["tests"]
+filterwarnings = [
+    "error", # All other warnings are transformed into errors.
+    # ignore the following warnings that matching a regex
+    'ignore:invalid escape sequence:SyntaxWarning',
+    'ignore:module \Ssre_parse\S is deprecated:DeprecationWarning',
+    'ignore:module \Ssre_constants\S is deprecated:DeprecationWarning',
+    'ignore:Please use atoms.calc:DeprecationWarning',
+    'ignore::pytest.PytestUnraisableExceptionWarning',
+    'ignore::pytest.PytestDeprecationWarning',
+    'ignore:distutils:DeprecationWarning',
+    'ignore:joblib \S use of fork() may lead to deadlocks in the child.:DeprecationWarning',
+    'ignore::ResourceWarning',
+    'ignore::UserWarning',
+    'ignore:\Storch\S:FutureWarning',
+]
+
+# ruff config
+[tool.ruff]
+line-length = 80
+indent-width = 4
+select = ["F", "E", "W", "UP", "D"]
+ignore = ["D100", "D103", "D104", "F722", 'UP038']
+[tool.ruff.pydocstyle]
+convention = "google"
