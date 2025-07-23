@@ -1,7 +1,8 @@
-module f2py
+module _pygfnfflib
     use iso_fortran_env,only:wp => real64,stdout => output_unit
     use gfnff_interface
     implicit none
+
 contains
 
 subroutine gfnff_sp(nat, ichrg, at, xyz, energy, grad, io)
@@ -39,18 +40,18 @@ end subroutine gfnff_sp
 !     !f2py intent(out) :: energy, grad
 !     !f2py depend(nat) :: grad, xyz
 
+!     logical :: pr = .false.
+!     type(gfnff_data) :: calculator
 !     character(len=:),allocatable :: alpbsolvent
 !     if sol == 0 then
 !         alpbsolvent = 'h2o'
 !     else
 !         alpbsolvent = 'h2o'
 !     end if
-!     type(gfnff_data) :: calculator
-!     logical :: pr = .false.
 
 !     !> calculation
 !     call gfnff_initialize(nat,at,xyz,calculator,print=pr,ichrg=ichrg,iostat=io)
 !     call gfnff_singlepoint(nat,at,xyz,calculator,energy,grad,pr,iostat=io)
 ! end subroutine gfnff_alpb
 
-end module f2py
+end module _pygfnfflib

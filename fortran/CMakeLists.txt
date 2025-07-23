@@ -31,6 +31,6 @@ set(srcs ${srcs} PARENT_SCOPE)
 
 
 list(APPEND f2pysrcs
-    "${dir}/f2py.f90"
+    "${dir}/_pygfnfflib.f90"
 )
 set(f2pysrcs ${f2pysrcs} PARENT_SCOPE)
