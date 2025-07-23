@@ -20,7 +20,18 @@ execute_process(
 )
 
 # General configuration information
-add_subdirectory("config")
+# Compiler settings for GNU and Intel Fortran compilers
+if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+    set(dialect "-g -O0 -fbacktrace -ffree-line-length-none -fbacktrace")
+    set(bounds "-fbounds-check -ffpe-trap=invalid,zero,overflow")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+    set(dialect "-g -O2 -r8 -align array64byte -traceback")
+    set(bounds "-check all -fpe0")
+else()
+    message(FATAL_ERROR "Please use an Intel or GNU compiler!")
+endif()
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${dialect}")
+set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${bounds}")
 option(WITH_OpenMP "Enable OpenMP support"                  FALSE)
 option(WITH_GBSA   "Build with implicit solvation support"  TRUE)
 option(WITH_TESTS  "Enable test binary build"               FALSE)
@@ -52,10 +63,11 @@ IF(WITH_GBSA)
 ENDIF()
 
 set(srcs)
+set(flib "gfnff_fortran")
 add_subdirectory("fortran")
-add_library("${PROJECT_NAME}-lib" STATIC ${srcs})
+add_library(${flib} STATIC ${srcs})
 set_target_properties(
-  "${PROJECT_NAME}-lib"
+  ${flib}
   PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
   OUTPUT_NAME "${PROJECT_NAME}"
@@ -64,10 +76,9 @@ set_target_properties(
   WINDOWS_EXPORT_ALL_SYMBOLS TRUE
   # Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include"
 )
-target_link_libraries("${PROJECT_NAME}-lib" PUBLIC "${lib-deps}")
+target_link_libraries(${flib} PUBLIC "${lib-deps}")
 target_include_directories(
-  "${PROJECT_NAME}-lib"
-  PUBLIC
+  ${flib} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -78,35 +89,36 @@ if(NOT EXISTS "${PROJECT_BINARY_DIR}/include")
 endif()
 
 
-# set(f2py_module_name "molalign")
-# set(fortran_src_file "${f2pysrcs}")
-# set(f2py_module_c "${f2py_module_name}module.c")
-# # Convert to C file by F2PY
-# add_custom_command(
-#   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${f2py_module_c}"
-#   COMMAND ${PYTHON_EXECUTABLE}  -m "numpy.f2py"
-#           "${fortran_src_file}"
-#           -m ${f2py_module_name}
-#           --lower # Important
-#   DEPENDS "${fortran_src_file}" # Fortran source
-# )
+set(f2py_module_name "gfnff")
+set(fortran_src_file "${f2pysrcs}")
+set(f2py_module_c "${f2py_module_name}module.c")
+# Convert to C file by F2PY
+add_custom_command(
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${f2py_module_c}"
+  COMMAND ${PYTHON_EXECUTABLE}  -m "numpy.f2py"
+          "${fortran_src_file}"
+          -m ${f2py_module_name}
+          --lower # Important
+  DEPENDS "${fortran_src_file}" # Fortran source
+)
 
-# python_add_library(
-#   ${CMAKE_PROJECT_NAME} MODULE
-#   "${f2py_module_name}module.c"
-#   "${F2PY_INCLUDE_DIR}/fortranobject.c"
-#   "${fortran_src_file}" WITH_SOABI
-# )
-# target_include_directories(
-#   ${CMAKE_PROJECT_NAME} PUBLIC
-#   ${F2PY_INCLUDE_DIR}
-# )
-# target_link_libraries(
-#   ${CMAKE_PROJECT_NAME} PUBLIC
-#   Python::NumPy
-#   MolAlignLib
-# )
-# install(
-#   TARGETS ${CMAKE_PROJECT_NAME}
-#   DESTINATION pymolalign
-# )
+set(py_module_name "_pygfnff_lib")
+python_add_library(
+  ${py_module_name} MODULE
+  "${f2py_module_name}module.c"
+  "${F2PY_INCLUDE_DIR}/fortranobject.c"
+  "${fortran_src_file}" WITH_SOABI
+)
+target_include_directories(
+  ${py_module_name} PUBLIC
+  ${F2PY_INCLUDE_DIR}
+)
+target_link_libraries(
+  ${py_module_name} PUBLIC
+  Python::NumPy
+  ${flib}
+)
+install(
+  TARGETS ${py_module_name}
+  DESTINATION pygfnff
+)

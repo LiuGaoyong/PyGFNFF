@@ -1,6 +1,6 @@
 
 IF(WITH_GBSA)
-add_subdirectory("gbsa")
+    add_subdirectory("gbsa")
 ENDIF()
 
 set(dir "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -28,3 +28,9 @@ list(APPEND srcs
 )
 
 set(srcs ${srcs} PARENT_SCOPE)
+
+
+list(APPEND f2pysrcs
+    "${dir}/f2py.f90"
+)
+set(f2pysrcs ${f2pysrcs} PARENT_SCOPE)
