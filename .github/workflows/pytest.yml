@@ -26,13 +26,15 @@ jobs:
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
-          compiler: intel
+          compiler: gcc
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
         env:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas"
+          CIBW_BEFORE_ALL_LINUX: "apt install -y libopenblas64-dev"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
