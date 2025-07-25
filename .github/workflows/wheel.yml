@@ -117,10 +117,8 @@ jobs:
             platform_id: win_amd64
             cibw_enable: cpython-freethreading
     steps:
-      - uses: fortran-lang/setup-fortran@v1
       - uses: actions/checkout@v4
-      - name: Build wheels
-        run: pipx run cibuildwheel --output-dir wheelhouse
+      - uses: pypa/cibuildwheel@v3.1.1
         env:
           CIBW_ENABLE: ${{ matrix.cibw_enable }}
           CIBW_BUILD_VERBOSITY: 1
