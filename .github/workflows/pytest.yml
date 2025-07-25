@@ -7,22 +7,20 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          # - ubuntu-latest
           # - ubuntu-24.04-arm
           # - windows-latest
           # - windows-11-arm
           # - macos-13
-          # - macos-latest
+          - macos-latest
 
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: fortran-lang/setup-fortran@v1
-      - run: |
-          uv sync
-          uv build --wheel
-          uv pip install pytest
-          uv pip install dist/*whl
-          source .venv/bin/activate
-          pytest -s
+      - run: uv sync && uv build --wheel
+        shell: bash -el {0}
+      - run: uv pip install pytest dist/*whl
+        shell: bash -el {0}
+      - run: source .venv/bin/activate && python -m pytest -s
         shell: bash -el {0}
