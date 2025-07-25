@@ -6,11 +6,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - windows-latest
+          - windows-11-arm
+          - macos-13
+          - macos-latest
 
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+      - uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: 13
       - run: |
+          uv sync
           uv run pytest -vv -s
         shell: bash -el {0}
