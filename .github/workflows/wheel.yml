@@ -97,22 +97,22 @@ jobs:
             platform_id: macosx_arm64
             cibw_enable: cpython-freethreading
           # win-64
-          - os: windows-2019
+          - os: windows-latest
             python: 39
             platform_id: win_amd64
-          - os: windows-2019
+          - os: windows-latest
             python: 310
             platform_id: win_amd64
-          - os: windows-2019
+          - os: windows-latest
             python: 311
             platform_id: win_amd64
-          - os: windows-2019
+          - os: windows-latest
             python: 312
             platform_id: win_amd64
-          - os: windows-2019
+          - os: windows-latest
             python: 313
             platform_id: win_amd64
-          - os: windows-2019
+          - os: windows-latest
             python: 313t
             platform_id: win_amd64
             cibw_enable: cpython-freethreading

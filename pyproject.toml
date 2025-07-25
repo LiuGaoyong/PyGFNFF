@@ -52,6 +52,10 @@ build-dir = "build/{wheel_tag}"
 cmake.version = ">=3.17.2"
 ninja.version = ">=1.10"
 
+[tool.cibuildwheel]
+free-threaded-support = true
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "13"
 
 # uv config
 [tool.uv]
