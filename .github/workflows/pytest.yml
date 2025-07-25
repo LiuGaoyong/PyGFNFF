@@ -22,6 +22,7 @@ jobs:
           compiler: gcc
           version: 13
       - run: |
-          uv sync
+          uv venv --default-index
+          uv sync --default-index
           uv run pytest -vv -s
         shell: bash -el {0}
