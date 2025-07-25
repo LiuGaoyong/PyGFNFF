@@ -18,13 +18,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: fortran-lang/setup-fortran@v1
-      - run: uv sync && uv build --wheel
-        shell: bash -el {0}
-      - run: uv pip install pytest dist/*.whl
-        shell: bash -el {0}
-      - run: ls -l .venv/lib/python3.12/site-packages/pygfnff
-        shell: bash -el {0}
-      - run: source .venv/bin/activate
-        shell: bash -el {0}
-      - run: .venv/bin/python -m pytest -s
-        shell: bash -el {0}
+      - run: |
+          rm uv.lock && uv sync --index https://pypi.org/simple
+          uv pip list && cat uv.lock
+          ls -l .venv/lib/python3.12/site-packages/pygfnff
+          uv run pytest -vv -s

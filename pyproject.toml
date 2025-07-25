@@ -55,7 +55,7 @@ ninja.version = ">=1.10"
 
 # uv config
 [tool.uv]
-package = false
+package = true
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
 
