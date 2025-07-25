@@ -1,7 +1,7 @@
 on: [pull_request]
 
 jobs:
-  test:
+  test4macos:
     name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:

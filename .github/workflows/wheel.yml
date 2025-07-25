@@ -35,6 +35,7 @@ jobs:
           - os: ubuntu-latest
             python: 313t
             platform_id: manylinux_x86_64
+            cibw_enable: cpython-freethreading
           # linux-aarch64
           - os: ubuntu-24.04-arm
             python: 39
@@ -54,6 +55,7 @@ jobs:
           - os: ubuntu-24.04-arm
             python: 313t
             platform_id: manylinux_aarch64
+            cibw_enable: cpython-freethreading
           # macos-x86-64
           - os: macos-13
             python: 39
@@ -73,6 +75,7 @@ jobs:
           - os: macos-13
             python: 313t
             platform_id: macosx_x86_64
+            cibw_enable: cpython-freethreading
           # macos-arm64
           - os: macos-14
             python: 39
@@ -92,6 +95,7 @@ jobs:
           - os: macos-14
             python: 313t
             platform_id: macosx_arm64
+            cibw_enable: cpython-freethreading
           # win-64
           - os: windows-2019
             python: 39
@@ -111,12 +115,14 @@ jobs:
           - os: windows-2019
             python: 313t
             platform_id: win_amd64
+            cibw_enable: cpython-freethreading
     steps:
       - uses: fortran-lang/setup-fortran@v1
       - uses: actions/checkout@v4
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23
+        run: pipx run cibuildwheel --output-dir wheelhouse
         env:
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
           CIBW_BUILD_VERBOSITY: 1
           CIBW_ARCHS: all
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
