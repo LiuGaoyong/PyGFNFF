@@ -31,26 +31,25 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = ["numpy"]
-
 [dependency-groups]
 dev = ["pytest"]
-
 
 [project.urls]
 homepage = "https://github.com/LiuGaoyong/PyGFNFF"
 repository = "https://github.com/LiuGaoyong/PyGFNFF"
 
-# setuptools config
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["PyGFNFF"]
-namespaces = true
 
 [tool.scikit-build]
+build.verbose = true
+logging.level = "INFO"
+wheel.packages = ["./pygfnff"]
+wheel.license-files = ["LICENSE"]
+wheel.expand-macos-universal-tags = true
 minimum-version = "build-system.requires"
 build-dir = "build/{wheel_tag}"
-cmake.version = ">=3.17.2"
 ninja.version = ">=1.10"
+cmake.version = ">=3.17.2"
+cmake.build-type = "Release"
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"

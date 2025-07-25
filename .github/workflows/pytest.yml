@@ -23,16 +23,9 @@ jobs:
             platform_id: win_amd64
 
     steps:
-      - name: Provide gfortran (Windows)
-        if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
-      - name: Tell distutils to use mingw (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "[build]`ncompiler=mingw32" | Out-File -Encoding ASCII ~/pydistutils.cfg
-      - name: Provide gfortran (MacOS)
+      - name: Provide gfortran (MacOS & Windows)
         uses: fortran-lang/setup-fortran@v1
-        if: runner.os == 'macOS'
+        if: runner.os != 'Linux'
         with:
           compiler: gcc
       - uses: actions/checkout@v4
