@@ -40,7 +40,13 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
-          CIBW_BEFORE_ALL_WINDOWS: "vcpkg install openblas"
+          CIBW_BEFORE_ALL_WINDOWS: >
+            Get-Command -Name powershell.exe  &&
+            Get-Command -Name gfortran.exe    &&
+            Get-Command -Name ifx.exe         &&
+            echo $env:FC                      &&
+            echo $env:PATH                    &&
+            vcpkg install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
