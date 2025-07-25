@@ -6,7 +6,7 @@ on:
   push:
     tags:
       - 'v*' # Alternative: only build for tags.
-  # pull_request:
+  pull_request:
 
 jobs:
   build_wheels:
