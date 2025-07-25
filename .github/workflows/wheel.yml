@@ -1,0 +1,27 @@
+name: Publish Python Package to PyPI
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*' # Alternative: only build for tags.
+jobs:
+  build_wheels:
+    name: Build & Upload to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build --wheel --sdist
+        shell: bash -el {0}
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./dist/*.*
+      - name: Publish to PyPI
+        # if: github.event_name == 'release' && github.event.action == 'published'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
