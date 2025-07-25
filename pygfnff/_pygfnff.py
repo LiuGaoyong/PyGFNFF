@@ -9,6 +9,7 @@ try:
     def gfnff(
         numbers: npt.ArrayLike,
         positions: npt.ArrayLike,
+        solvent: str = "",
         charge: int = 0,
     ) -> tuple[float, np.ndarray]:
         """Run single point energy calculation by GFNFF.
@@ -16,7 +17,9 @@ try:
         Args:
             numbers (np.ndarray): The atomic numbers.
             positions (np.ndarray): The atomic postions (unit: Bohr).
-            charge (int, optional): _description_. Defaults to 0.
+            solvent (str, optional): The solvent by ALPB solvent model.
+                Defaults to empty string means turn off solvent model.
+            charge (int, optional): The total charge. Defaults to 0.
 
         Returns:
             tuple[float, np.ndarray]:
@@ -28,13 +31,15 @@ try:
         assert positions.shape == (len(numbers), 3)
         charge = int(charge)
 
-        result = lib.gfnff.gfnff_sp(
-            len(numbers),
-            charge,
-            numbers,
-            np.asfortranarray(positions.T, dtype=np.float64),
-        )
-        iostat, energy, grad = result
+        if solvent == "":
+            iostat, energy, grad = lib.gfnff.gfnff_sp(
+                len(numbers),
+                charge,
+                numbers,
+                np.asfortranarray(positions.T, dtype=np.float64),
+            )
+        else:
+            raise NotImplementedError
         if iostat == 0:
             for postfix in ("topo", "adjacency"):
                 f = Path().joinpath(f"gfnff_{postfix}")
@@ -53,9 +58,7 @@ except ImportError:
     raise ImportError("The pygfnff backend is not available.")
 
 
-if __name__ == "__main__":
-    from time import perf_counter_ns
-
+def coffeine() -> tuple[npt.ArrayLike, npt.ArrayLike]:
     Z = [6, 7, 6, 7, 6, 6, 6, 8, 7, 6, 8, 7, 6, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     R = [
         [2.02799738646442, 0.09231312124713, -0.14310895950963],
@@ -83,6 +86,14 @@ if __name__ == "__main__":
         [8.31919801555568, -9.74947502841788, 1.56539243085954],
         [8.31511620712388, -9.76854236502758, -1.79108242206824],
     ]
+    return Z, R
+
+
+def test_coffeine_sp() -> None:
+    from time import perf_counter_ns
+
+    Z, R = coffeine()
+    e_ref = -4.672792533926004
     f_ref = [
         [0.005301570264175, 0.000273970046453, 0.000002235966967],
         [0.008166037109104, -0.008220839180901, -0.000025577434354],
@@ -109,11 +120,15 @@ if __name__ == "__main__":
         [0.001617340754014, -0.001636910544025, 0.003219103002614],
         [0.001603376956109, -0.001699034793892, -0.003148156655631],
     ]
-    e_ref = -4.672792533926004
 
     t0 = perf_counter_ns()
     e, f = gfnff(numbers=Z, positions=R)
     t1 = perf_counter_ns()
-    print(f"{(t1 - t0) / 1e6:.2f}ms")
+
     np.testing.assert_approx_equal(e, e_ref)
     np.testing.assert_array_almost_equal(f, f_ref)
+    print(f"SPE for coffeine: {(t1 - t0) / 1e6:.2f}ms")
+
+
+if __name__ == "__main__":
+    test_coffeine_sp()
