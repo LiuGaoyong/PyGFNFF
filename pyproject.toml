@@ -53,6 +53,8 @@ cmake.version = ">=3.17.2"
 ninja.version = ">=1.10"
 
 [tool.cibuildwheel]
+test-requires = "pytest"
+test-command = "pytest -s"
 free-threaded-support = true
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "13"
