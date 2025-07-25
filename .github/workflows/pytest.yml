@@ -15,12 +15,19 @@ jobs:
           - macos-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - uses: fortran-lang/setup-fortran@v1
+      - uses: mamba-org/setup-micromamba@v2
         with:
-          compiler: gcc
-          version: 13
+          environment-name: wheel
+          condarc: |
+            channels:
+              - conda-forge
+              - pytorch
+          create-args: >-
+            c-compiler
+            fortran-compiler
+            libopenblas
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v4
       - run: |
           uv venv --default-index https://pypi.org/simple
           uv sync --default-index https://pypi.org/simple
