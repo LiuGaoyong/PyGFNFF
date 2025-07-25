@@ -112,6 +112,7 @@ jobs:
             python: 313t
             platform_id: win_amd64
     steps:
+      - uses: fortran-lang/setup-fortran@v1
       - uses: actions/checkout@v4
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23
@@ -128,10 +129,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-      - run: python -m pip install build
       - name: Build sdist
-        run: python -m build --sdist
+        run: pipx run build --sdist
       - uses: actions/upload-artifact@v4
         with:
           name: cibw-sdist
