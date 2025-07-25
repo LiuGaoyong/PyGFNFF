@@ -22,10 +22,18 @@ jobs:
             platform_id: win_amd64
     steps:
       - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: gcc
+          version: 13
+      - run: |
+          which gcc
+          which gfortran
+          echo $FC $CC $CXX
       - uses: actions/checkout@v4
       - uses: pypa/cibuildwheel@v3.1.1
         env:
-          CIBW_BUILD_VERBOSITY: 1
           CIBW_ARCHS: all
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD_VERBOSITY: 1
       - run: ls -l wheelhouse/*
