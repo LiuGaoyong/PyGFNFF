@@ -55,10 +55,9 @@ ninja.version = ">=1.10"
 
 # uv config
 [tool.uv]
-package = true
+package = false
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
-default = true
 
 # pytest config
 [tool.pytest.ini_options]

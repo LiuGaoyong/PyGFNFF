@@ -18,5 +18,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: fortran-lang/setup-fortran@v1
-      - run: uv run pytest -s --default-index https://pypi.org/simple
+      - run: |
+          uv sync
+          uv build --wheel
+          uv pip install pytest
+          uv pip install dist/*whl
+          source .venv/bin/activate
+          pytest -s
         shell: bash -el {0}
