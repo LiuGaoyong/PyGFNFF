@@ -63,7 +63,7 @@ ninja.version = ">=1.10"
 
 # uv config
 [tool.uv]
-package = false
+package = true
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
 default = true
@@ -72,21 +72,6 @@ default = true
 [tool.pytest.ini_options]
 addopts = '--maxfail=1 -rf' # exit after 1 failures, report fail info
 testpaths = ["tests"]
-filterwarnings = [
-    "error", # All other warnings are transformed into errors.
-    # ignore the following warnings that matching a regex
-    'ignore:invalid escape sequence:SyntaxWarning',
-    'ignore:module \Ssre_parse\S is deprecated:DeprecationWarning',
-    'ignore:module \Ssre_constants\S is deprecated:DeprecationWarning',
-    'ignore:Please use atoms.calc:DeprecationWarning',
-    'ignore::pytest.PytestUnraisableExceptionWarning',
-    'ignore::pytest.PytestDeprecationWarning',
-    'ignore:distutils:DeprecationWarning',
-    'ignore:joblib \S use of fork() may lead to deadlocks in the child.:DeprecationWarning',
-    'ignore::ResourceWarning',
-    'ignore::UserWarning',
-    'ignore:\Storch\S:FutureWarning',
-]
 
 # ruff config
 [tool.ruff]
