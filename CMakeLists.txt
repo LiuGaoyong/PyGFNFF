@@ -34,6 +34,16 @@ if(NOT TARGET "OpenMP::OpenMP_Fortran")
     add_library("OpenMP::OpenMP_Fortran" INTERFACE IMPORTED)
   endif()
 endif()
+# Linear algebra (contains BLAS)
+# if(NOT TARGET "LAPACK::LAPACK")
+#     find_package("LAPACK" REQUIRED)
+# endif()
+# set(
+#   lib-deps
+#   "OpenMP::OpenMP_Fortran"
+#   "LAPACK::LAPACK"
+#   "$<$<VERSION_LESS:${CMAKE_VERSION},3.20>:BLAS::BLAS>"
+# )
 set(lib-deps "OpenMP::OpenMP_Fortran")
 # Custom compile arguments
 IF(WITH_GBSA)
