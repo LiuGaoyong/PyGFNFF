@@ -11,36 +11,37 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - os: ubuntu-latest
-          #   python: 312
-          #   platform_id: manylinux_x86_64
-          # - os: macos-latest
-          #   python: 312
-          #   platform_id: macosx_arm64
-          #   macos_target: 14
+          - os: ubuntu-latest
+            python: 312
+            platform_id: manylinux_x86_64
+          - os: macos-latest
+            python: 312
+            platform_id: macosx_arm64
+            macos_target: 14
           - os: windows-latest
             python: 312
             platform_id: win_amd64
 
     steps:
-      - name: Provide gfortran (MacOS & Windows)
+      - name: Provide gfortran (MacOS)
         uses: fortran-lang/setup-fortran@v1
-        if: runner.os != 'Linux'
+        if: runner.os == 'MacOS'
         with:
           compiler: gcc
-      - run: |
-          gfortran --version
-          echo "PATH=${PATH}"
-          which gfortran
-      # - uses: actions/checkout@v4
-      # - uses: astral-sh/setup-uv@v5
-      # - uses: pypa/cibuildwheel@v3.1.1
-      #   env:
-      #     CIBW_ARCHS: all
-      #     CIBW_BUILD_VERBOSITY: 1
-      #     CIBW_BEFORE_ALL_MACOS: "brew install openblas"
-      #     CIBW_BEFORE_ALL_WINDOWS: "vcpkg install openblas"
-      #     CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-      #     CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-      #     MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
-      # - run: ls -l wheelhouse/*
+      - name: Provide gfortran (Windows)
+        uses: fortran-lang/setup-fortran@v1
+        if: runner.os == 'Windows'
+        with:
+          compiler: intel
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: pypa/cibuildwheel@v3.1.1
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas"
+          CIBW_BEFORE_ALL_WINDOWS: "vcpkg install openblas"
+          CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
+      - run: ls -l wheelhouse/*
