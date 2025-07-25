@@ -20,6 +20,8 @@ jobs:
       - uses: fortran-lang/setup-fortran@v1
       - run: uv sync && uv build --wheel
         shell: bash -el {0}
+      - run: uv pip install pytest dist/*.whl
+        shell: bash -el {0}
       - run: ls -l .venv/lib/python3.12/site-packages/pygfnff
         shell: bash -el {0}
       - run: source .venv/bin/activate
