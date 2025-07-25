@@ -29,8 +29,8 @@ jobs:
           compiler: gcc
           version: 13
       - run: |
-          which gcc
-          which gfortran
+          which gcc-13
+          which gfortran-13
           echo $FC $CC $CXX
       - uses: actions/checkout@v4
       - uses: pypa/cibuildwheel@v3.1.1
@@ -38,6 +38,5 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ENVIRONMENT: '${{ steps.setup-fortran.outputs.fc }} ${{ steps.setup-fortran.outputs.cc }} ${{ steps.setup-fortran.outputs.cxx }}'
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}
       - run: ls -l wheelhouse/*
