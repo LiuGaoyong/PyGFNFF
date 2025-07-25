@@ -15,21 +15,32 @@ jobs:
           # - macos-latest
 
     steps:
-      - uses: mamba-org/setup-micromamba@v2
-        with:
-          environment-name: wheel
-          condarc: |
-            channels:
-              - conda-forge
-              - pytorch
-          create-args: >-
-            c-compiler
-            fortran-compiler
-            libopenblas
-      - uses: astral-sh/setup-uv@v5
       - uses: actions/checkout@v4
-      - run: |
-          uv venv --default-index https://pypi.org/simple
-          uv sync --default-index https://pypi.org/simple
-          uv run pytest -vv -s
-        shell: bash -el {0}
+      - uses: actions/setup-python@v5
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==3.1.1
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+
+      # - uses: mamba-org/setup-micromamba@v2
+      #   with:
+      #     environment-name: wheel
+      #     condarc: |
+      #       channels:
+      #         - conda-forge
+      #         - pytorch
+      #     create-args: >-
+      #       c-compiler
+      #       fortran-compiler
+      #       libopenblas
+      # - uses: astral-sh/setup-uv@v5
+      # - uses: actions/checkout@v4
+      # - run: |
+      #     uv venv --default-index https://pypi.org/simple
+      #     uv sync --default-index https://pypi.org/simple
+      #     uv run pytest -vv -s
+      #   shell: bash -el {0}
