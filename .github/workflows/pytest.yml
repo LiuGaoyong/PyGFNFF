@@ -17,9 +17,11 @@ jobs:
           - os: macos-latest
             python: 312
             platform_id: macosx_arm64
+            macos_target: 14
           - os: windows-latest
             python: 312
             platform_id: win_amd64
+
     steps:
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
@@ -34,6 +36,8 @@ jobs:
       - uses: pypa/cibuildwheel@v3.1.1
         env:
           CIBW_ARCHS: all
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_BUILD_VERBOSITY: 1
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ENVIRONMENT: '${{ steps.setup-fortran.outputs.fc }} ${{ steps.setup-fortran.outputs.cc }} ${{ steps.setup-fortran.outputs.cxx }}'
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}
       - run: ls -l wheelhouse/*
