@@ -26,6 +26,10 @@ jobs:
       - name: Provide gfortran (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
+      - name: Tell distutils to use mingw (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          echo "[build]`ncompiler=mingw32" | Out-File -Encoding ASCII ~/pydistutils.cfg
       - name: Provide gfortran (MacOS)
         uses: fortran-lang/setup-fortran@v1
         if: runner.os == 'macOS'
@@ -38,6 +42,7 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
+          CIBW_BEFORE_ALL_WINDOWS: "vcpkg install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
