@@ -6,7 +6,7 @@ on:
   push:
     tags:
       - 'v*' # Alternative: only build for tags.
-  pull_request:
+  # pull_request:
 
 jobs:
   build_wheels:
@@ -117,6 +117,7 @@ jobs:
             platform_id: win_amd64
             cibw_enable: cpython-freethreading
     steps:
+      - uses: fortran-lang/setup-fortran@v1
       - uses: actions/checkout@v4
       - uses: pypa/cibuildwheel@v3.1.1
         env:

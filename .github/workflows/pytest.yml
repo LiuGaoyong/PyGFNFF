@@ -1,24 +1,31 @@
-on: [pull_request]
+name: Build & Test
+
+on:
+  pull_request:
 
 jobs:
-  test4macos:
-    name: Test on ${{ matrix.os }}
+  build_wheels:
+    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - macos-13
-          - macos-latest
-
+        include:
+          - os: ubuntu-latest
+            python: 312
+            platform_id: manylinux_x86_64
+          - os: macos-14
+            python: 312
+            platform_id: macosx_arm64
+          - os: windows-latest
+            python: 312
+            platform_id: win_amd64
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
       - uses: fortran-lang/setup-fortran@v1
-      - run: |
-          rm uv.lock && uv sync --index https://pypi.org/simple
-          uv pip list && cat uv.lock
-        shell: bash -el {0}
-      - run: |
-          ls -l .venv/lib/python*/site-packages/pygfnff
-          uv run pytest -vv -s
-        shell: bash -el {0}
+      - uses: actions/checkout@v4
+      - uses: pypa/cibuildwheel@v3.1.1
+        env:
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_ARCHS: all
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+      - run: ls -l wheelhouse/*
