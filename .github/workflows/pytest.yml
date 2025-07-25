@@ -26,5 +26,5 @@ jobs:
         shell: bash -el {0}
       - run: source .venv/bin/activate
         shell: bash -el {0}
-      - run: which python && python -m pytest -s
+      - run: .venv/bin/python -m pytest -s
         shell: bash -el {0}
