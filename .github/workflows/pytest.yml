@@ -57,7 +57,8 @@ jobs:
           ls -l wheelhouse/*
           uv sync
           uv pip install wheelhouse/*.whl
-          .venv/Scripts/python.exe -m pytest -vv -s
+          cd .venv
+          Scripts/python.exe -m pytest ../tests -vv -s
         if: runner.os == 'Windows'
         shell: msys2 {0}
       - uses: pypa/cibuildwheel@v3.1.1

@@ -6,7 +6,7 @@ on:
   push:
     tags:
       - 'v*' # Alternative: only build for tags.
-  #pull_request:
+  pull_request:
 
 jobs:
   build_wheels:
@@ -16,6 +16,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # win-64
+          - os: windows-latest
+            python: 39
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 310
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 311
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 312
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 313
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 313t
+            platform_id: win_amd64
+            cibw_enable: cpython-freethreading
           # linux-64
           - os: ubuntu-latest
             python: 39
@@ -111,9 +131,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - uses: pypa/cibuildwheel@v3.1.1
+      - name: Provide gfortran (Windows)
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        id: msys2
+        with:
+          update: true
+          cache: true
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-gcc-fortran
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Windows'
+        with:
+          python-version: '3.13'
+      - run: pipx run --python 3.13 cibuildwheel==3.1.1
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
         env:
-          CIBW_ENABLE: ${{ matrix.cibw_enable }}
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_TEST_COMMAND_WINDOWS: ""
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+      - run: |
+          mv wheelhouse dist
+          pipx run --python 3.13 delvewheel==1.10 repair dist/*.whl -vv
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+      - uses: pypa/cibuildwheel@v3.1.1
+        if: runner.os != 'Windows'
+        env:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
@@ -124,192 +172,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: cibw-wheels-cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ strategy.job-index }}
-          path: ./wheelhouse/*.whl
-
-  build_wheels_for_cp39-windows:
-    name: Build wheels for cp39-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython39
-          uv build --wheel
-          ls -l dist/*
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-cp39-win_amd64
-          path: ./wheelhouse/*.whl
-
-  build_wheels_for_cp310-windows:
-    name: Build wheels for cp310-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython310
-          uv build --wheel
-          ls -l dist/*
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-cp310-win_amd64
-          path: ./wheelhouse/*.whl
-
-  build_wheels_for_cp311-windows:
-    name: Build wheels for cp311-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython311
-          uv build --wheel
-          ls -l dist/*
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-cp311-win_amd64
-          path: ./wheelhouse/*.whl
-
-  build_wheels_for_cp312-windows:
-    name: Build wheels for cp312-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython312
-          uv build --wheel
-          ls -l dist/*
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-cp312-win_amd64
-          path: ./wheelhouse/*.whl
-
-  build_wheels_for_cp313-windows:
-    name: Build wheels for cp313-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython313
-          uv build --wheel
-          ls -l dist/*
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-cp313-win_amd64
-          path: ./wheelhouse/*.whl
-
-  build_wheels_for_cp313t-windows:
-    name: Build wheels for cp313t-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython313t
-          uv build --wheel
-          ls -l dist/*
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-cp313t-win_amd64
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -325,15 +187,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    needs:
-      - build_wheels
-      - build_sdist
-      - build_wheels_for_cp313t-windows
-      - build_wheels_for_cp313-windows
-      - build_wheels_for_cp312-windows
-      - build_wheels_for_cp311-windows
-      - build_wheels_for_cp310-windows
-      - build_wheels_for_cp39-windows
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     permissions:
