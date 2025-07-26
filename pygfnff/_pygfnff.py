@@ -108,12 +108,23 @@ class GFNFF(ase_calc.Calculator):
         """Perform actual calculation by GFNFF."""
         super().calculate(atoms, properties, system_changes)
         assert isinstance(self.atoms, Atoms)
-        energy, gradient = gfnff(
-            self.atoms.numbers,
-            self.atoms.positions * U.Angstrom / U.Bohr,
-            solvent=self.__solvent,
-            charge=int(self.atoms.get_initial_charges().sum()),
-        )
+        if any(self.atoms.pbc) or self.atoms.cell.array:
+            raise ase_calc.CalculatorSetupError(
+                "PBC system is not supported yet by pygfnff backend."
+            )
+
+        try:
+            energy, gradient = gfnff(
+                self.atoms.numbers,
+                self.atoms.positions * U.Angstrom / U.Bohr,
+                solvent=self.__solvent,
+                charge=int(self.atoms.get_initial_charges().sum()),
+            )
+        except ImportError as e:
+            raise ase_calc.CalculatorError(e)
+        except RuntimeError as e:
+            raise ase_calc.CalculationFailed(f"Error in Fortran backend: {e}.")
+
         self.results.update(
             dict(
                 energy=energy * U.Hartree / U.eV,
