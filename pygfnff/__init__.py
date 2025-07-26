@@ -1,3 +1,3 @@
-from ._pygfnff import gfnff
+from ._pygfnff import GFNFF, gfnff
 
-__all__ = ["gfnff"]
+__all__ = ["GFNFF", "gfnff"]

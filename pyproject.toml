@@ -9,7 +9,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pygfnff"
-version = "v0.0.1"
+version = "v0.0.2alpha"
 description = "A Python Library for GFN-FF."
 readme = "README.md"
 authors = [{ name = "Liu Gaoyong", email = "liugaoyong_88@163.com" }]
@@ -30,7 +30,7 @@ classifiers = [
     'Topic :: Software Development :: Libraries',
 ]
 requires-python = ">=3.9"
-dependencies = ["numpy"]
+dependencies = ["ase", "numpy", "typing_extensions"]
 [dependency-groups]
 dev = ["pytest"]
 
