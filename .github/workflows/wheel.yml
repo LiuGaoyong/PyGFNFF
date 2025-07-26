@@ -1,4 +1,4 @@
-name: Publish Python Package to PyPI
+name: Build, Test & Publish to PyPI
 
 on:
   release:
@@ -6,29 +6,179 @@ on:
   push:
     tags:
       - 'v*' # Alternative: only build for tags.
+  # pull_request:
+
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - ubuntu-24.04-arm
-          - windows-latest
-          - windows-11-arm
-          - macos-13
-          - macos-latest
+        include:
+          # win-64
+          - os: windows-latest
+            python: 39
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 310
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 311
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 312
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 313
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 313t
+            platform_id: win_amd64
+            cibw_enable: cpython-freethreading
+          # linux-64
+          - os: ubuntu-latest
+            python: 39
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            python: 310
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            python: 311
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            python: 312
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            python: 313
+            platform_id: manylinux_x86_64
+          - os: ubuntu-latest
+            python: 313t
+            platform_id: manylinux_x86_64
+            cibw_enable: cpython-freethreading
+          # linux-aarch64
+          - os: ubuntu-24.04-arm
+            python: 39
+            platform_id: manylinux_aarch64
+          - os: ubuntu-24.04-arm
+            python: 310
+            platform_id: manylinux_aarch64
+          - os: ubuntu-24.04-arm
+            python: 311
+            platform_id: manylinux_aarch64
+          - os: ubuntu-24.04-arm
+            python: 312
+            platform_id: manylinux_aarch64
+          - os: ubuntu-24.04-arm
+            python: 313
+            platform_id: manylinux_aarch64
+          - os: ubuntu-24.04-arm
+            python: 313t
+            platform_id: manylinux_aarch64
+            cibw_enable: cpython-freethreading
+          # macos-x86-64
+          - os: macos-13
+            python: 39
+            macos_target: 13
+            platform_id: macosx_x86_64
+          - os: macos-13
+            python: 310
+            macos_target: 13
+            platform_id: macosx_x86_64
+          - os: macos-13
+            python: 311
+            macos_target: 13
+            platform_id: macosx_x86_64
+          - os: macos-13
+            python: 312
+            macos_target: 13
+            platform_id: macosx_x86_64
+          - os: macos-13
+            python: 313
+            macos_target: 13
+            platform_id: macosx_x86_64
+          - os: macos-13
+            python: 313t
+            macos_target: 13
+            platform_id: macosx_x86_64
+            cibw_enable: cpython-freethreading
+          # macos-arm64
+          - os: macos-latest
+            python: 39
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: 310
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: 311
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: 312
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: 313
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-latest
+            python: 313t
+            macos_target: 14
+            platform_id: macosx_arm64
+            cibw_enable: cpython-freethreading
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Provide gfortran (Windows)
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        id: msys2
+        with:
+          update: true
+          cache: true
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-gcc-fortran
       - uses: actions/setup-python@v5
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==3.1.1
-      - name: Build wheels
-        run: python -m cibuildwheel --output-dir wheelhouse
+        if: runner.os == 'Windows'
+        with:
+          python-version: '3.13'
+      - run: pipx run --python 3.13 cibuildwheel==3.1.1
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_TEST_COMMAND_WINDOWS: ""
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          UV_DEFAULT_INDEX: https://pypi.org/simple
+          UV_INDEX: https://pypi.org/simple
+      - run: |
+          mv wheelhouse dist
+          pipx run --python 3.13 delvewheel==1.10 repair dist/*.whl -vv
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+      - uses: pypa/cibuildwheel@v3.1.1
+        if: runner.os != 'Windows'
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
+          CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
+          UV_DEFAULT_INDEX: https://pypi.org/simple
+          UV_INDEX: https://pypi.org/simple
+      - run: ls -l wheelhouse/*
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cibw-wheels-cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -36,13 +186,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: '3.12'
-      - run: python -m pip install build
       - name: Build sdist
-        run: python -m build --sdist
+        run: pipx run build --sdist
       - uses: actions/upload-artifact@v4
         with:
           name: cibw-sdist

@@ -1,25 +1,78 @@
-on: [pull_request]
+name: Build & Test
+
+on:
+  pull_request:
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
+  build_wheels:
+    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - ubuntu-24.04-arm
-          # - windows-latest
-          # - windows-11-arm
-          # - macos-13
-          # - macos-latest
-
+        include:
+          - os: windows-latest
+            python: 312
+            platform_id: win_amd64
+          - os: ubuntu-latest
+            python: 312
+            platform_id: manylinux_x86_64
+          - os: macos-latest
+            python: 312
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-13
+            python: 312
+            macos_target: 13
+            platform_id: macosx_x86_64
     steps:
-      - uses: fortran-lang/setup-fortran@v1
-      - uses: astral-sh/setup-uv@v5
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Provide gfortran (Windows)
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        id: msys2
+        with:
+          update: true
+          cache: true
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-gcc-fortran
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Windows'
+        with:
+          python-version: '3.13'
+      - run: pipx run --python 3.13 cibuildwheel==3.1.1
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_TEST_COMMAND_WINDOWS: ""
+          UV_INDEX: https://pypi.org/simple
+          UV_DEFAULT_INDEX: https://pypi.org/simple
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
       - run: |
-          uv venv --default-index https://pypi.org/simple
-          uv sync --default-index https://pypi.org/simple
-          uv run pytest -vv -s
-        shell: bash -el {0}
+          mv wheelhouse dist
+          pipx run --python 3.13 delvewheel==1.10 repair dist/*.whl -vv
+          # ls -l wheelhouse/*
+          # uv sync
+          # uv pip install wheelhouse/*.whl
+          # cd .venv
+          # Scripts/python.exe -m pytest ../tests -vv -s
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+      - uses: pypa/cibuildwheel@v3.1.1
+        if: runner.os != 'Windows'
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          UV_INDEX: https://pypi.org/simple
+          UV_DEFAULT_INDEX: https://pypi.org/simple
+          CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
+      - run: ls -l wheelhouse/*
+        shell: bash

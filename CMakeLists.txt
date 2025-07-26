@@ -35,6 +35,11 @@ if(NOT TARGET "OpenMP::OpenMP_Fortran")
   endif()
 endif()
 # Linear algebra (contains BLAS)
+# Compatible with Windows MSYS
+#   https://www.soinside.com/question/JW92rdzwmdNuSooN8P4Tx7
+set(CMAKE_FIND_LIBRARY_PREFIXES ";lib")
+message(STATUS "BLAS libraries: ${BLAS_LIBRARIES}")
+message(STATUS "LAPACK libraries: ${LAPACK_LIBRARIES}")
 if(NOT TARGET "LAPACK::LAPACK")
     find_package("LAPACK" REQUIRED)
 endif()

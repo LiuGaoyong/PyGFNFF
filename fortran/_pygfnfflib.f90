@@ -1,53 +1,68 @@
 module gfnff
-    use iso_fortran_env,only:wp => real64,stdout => output_unit
     use gfnff_interface
     implicit none
 
 contains
 
-subroutine gfnff_sp(nat, ichrg, at, xyz, energy, grad, io)
-    integer,intent(in) :: nat
-    integer,intent(in) :: ichrg
-    integer,intent(in) :: at(nat)
-    real(wp),intent(out) :: energy
-    real(wp),intent(out) :: grad(nat, 3)
-    real(wp),intent(in) :: xyz(nat, 3)
-    integer,intent(out) :: io
 
-    !f2py intent(in) :: nat, ichrg, at, xyz, io
-    !f2py intent(out) :: energy, grad
-    !f2py depend(nat) :: grad, xyz
+subroutine gfnff_sp(nat, ichrg, numbers, posotions, status, energy, grad)
+    integer,intent(in) :: nat, ichrg
+    integer,intent(in) :: numbers(nat)
+    double precision,intent(in) :: posotions(3, nat)      ! Bohr
+    !f2py depend(posotions) :: nat=shape(posotions,1)
+    !f2py depend(numbers) :: nat=size(numbers)
 
-    type(gfnff_data) :: calculator
+    integer :: io
+    integer,intent(out) :: status
+    double precision,intent(out) :: energy          ! Hartree
+    double precision,intent(out) :: grad(3, nat)    ! Hartree / Bohr
     logical, parameter :: pr = .false.
+    type(gfnff_data) :: calculator
 
     !> calculation
-    call gfnff_initialize(nat,at,xyz,calculator,print=pr,ichrg=ichrg,iostat=io)
-    call gfnff_singlepoint(nat,at,xyz,calculator,energy,grad,pr,iostat=io)
+    call calculator%init(nat,numbers,posotions,print=pr,verbose=pr,ichrg=ichrg,iostat=io)
+    if (io == 0) then
+        ! Topology setup successful
+        status = 0
+    else
+        ! Topology setup exited with errors
+        status = 1
+        error stop
+    end if
+    call gfnff_singlepoint(nat,numbers,posotions,calculator,energy,grad,pr,iostat=io)
+    if (io == 0) then
+        ! Singlepoint successful!
+        status = 0
+    else
+        ! Singlepoint exited with errors
+        status = 2
+        error stop
+    end if
 end subroutine gfnff_sp
 
-subroutine gfnff_alpb(nat, ichrg, at, xyz, sol, energy, grad, io)
-    integer,intent(in) :: nat
-    integer,intent(in) :: sol
-    integer,intent(in) :: ichrg
-    integer,intent(in) :: at(nat)
-    real(wp),intent(out) :: energy
-    real(wp),intent(out) :: grad(nat, 3)
-    real(wp),intent(in) :: xyz(nat, 3)
-    integer,intent(out) :: io
 
-    !f2py intent(in) :: nat, ichrg, at, xyz, io, sol
-    !f2py intent(out) :: energy, grad
-    !f2py depend(nat) :: grad, xyz
+! subroutine gfnff_alpb(nat, ichrg, numbers, posotions, sol, energy, grad, io)
+!     integer,intent(in) :: nat
+!     integer,intent(in) :: sol
+!     integer,intent(in) :: ichrg
+!     integer,intent(in) :: numbers(nat)
+!     double precision,intent(out) :: energy
+!     double precision,intent(out) :: grad(nat, 3)
+!     double precision,intent(in) :: posotions(nat, 3)
+!     integer,intent(out) :: io
 
-    logical :: pr = .false.
-    type(gfnff_data) :: calculator
-    character(len=:),allocatable :: alpbsolvent
-    alpbsolvent = 'h2o'
+!     !f2py intent(in) :: nat, ichrg, numbers, posotions, io, sol
+!     !f2py intent(out) :: energy, grad
+!     !f2py depend(nat) :: grad, posotions
 
-    !> calculation
-    call gfnff_initialize(nat,at,xyz,calculator,print=pr,ichrg=ichrg,iostat=io)
-    call gfnff_singlepoint(nat,at,xyz,calculator,energy,grad,pr,iostat=io)
-end subroutine gfnff_alpb
+!     logical :: pr = .false.
+!     type(gfnff_data) :: calculator
+!     character(len=:),allocatable :: alpbsolvent
+!     alpbsolvent = 'h2o'
+
+!     !> calculation
+!     call gfnff_initialize(nat,numbers,posotions,calculator,print=pr,ichrg=ichrg,iostat=io)
+!     call gfnff_singlepoint(nat,numbers,posotions,calculator,energy,grad,pr,iostat=io)
+! end subroutine gfnff_alpb
 
 end module gfnff

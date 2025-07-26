@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "scikit-build-core>=0.10",
-    "numpy",
+    "scikit-build-core>=0.11",
     "charset_normalizer",
     "f2py-cmake",
+    "numpy",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -29,64 +29,45 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Chemistry',
     'Topic :: Software Development :: Libraries',
 ]
-requires-python = ">=3.9, <=3.13"
-dependencies = [
-    "ase",
-    "numpy",
-    "typing-extensions",
-]
-
+requires-python = ">=3.9"
+dependencies = ["numpy"]
 [dependency-groups]
-dev = [
-    "ruff>=0.11.2",
-    "pytest>=8.3.5",
-    'build',
-]
-
+dev = ["pytest"]
 
 [project.urls]
 homepage = "https://github.com/LiuGaoyong/PyGFNFF"
 repository = "https://github.com/LiuGaoyong/PyGFNFF"
 
-# setuptools config
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["PyGFNFF"]
-namespaces = true
-
 [tool.scikit-build]
+build.verbose = true
+logging.level = "INFO"
+sdist.exclude = [".github"]
+wheel.license-files = ["LICENSE"]
+wheel.expand-macos-universal-tags = true
 minimum-version = "build-system.requires"
 build-dir = "build/{wheel_tag}"
-cmake.version = ">=3.17.2"
 ninja.version = ">=1.10"
+cmake.version = ">=4.0"
+cmake.build-type = "Release"
+# add this can compatible with Windows MSYS
+#   https://github.com/actions/runner-images/discussions/7998
+cmake.args = ["-GNinja"]
 
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+test-requires = "pytest"
+test-command = "pytest -s {project}/tests"
 
 # uv config
 [tool.uv]
-package = false
+package = false # editable when uv sync
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
-default = true
 
 # pytest config
 [tool.pytest.ini_options]
 addopts = '--maxfail=1 -rf' # exit after 1 failures, report fail info
 testpaths = ["tests"]
-filterwarnings = [
-    "error", # All other warnings are transformed into errors.
-    # ignore the following warnings that matching a regex
-    'ignore:invalid escape sequence:SyntaxWarning',
-    'ignore:module \Ssre_parse\S is deprecated:DeprecationWarning',
-    'ignore:module \Ssre_constants\S is deprecated:DeprecationWarning',
-    'ignore:Please use atoms.calc:DeprecationWarning',
-    'ignore::pytest.PytestUnraisableExceptionWarning',
-    'ignore::pytest.PytestDeprecationWarning',
-    'ignore:distutils:DeprecationWarning',
-    'ignore:joblib \S use of fork() may lead to deadlocks in the child.:DeprecationWarning',
-    'ignore::ResourceWarning',
-    'ignore::UserWarning',
-    'ignore:\Storch\S:FutureWarning',
-]
 
 # ruff config
 [tool.ruff]
