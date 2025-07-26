@@ -48,7 +48,38 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_WINDOWS: "dir C:/mingw64/bin && dir C:/mingw64/lib"
+          CIBW_BEFORE_ALL_WINDOWS: "pwd && dir 'C:/mingw64/bin' && dir 'C:/mingw64/lib'"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
+
+  build_wheels_for_windows:
+    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            python: 312
+            platform_id: win_amd64
+
+    steps:
+      - name: Provide gfortran (Windows)
+        # https://github.com/actions/runner-images/discussions/7998
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        id: msys2
+        with:
+          update: true
+          cache: true
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-gcc-fortran
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: |
+          uv build --wheel
+          ls -l wheelhouse/*
+        shell: msys2 {0}
