@@ -56,13 +56,15 @@ jobs:
       - run: |
           mv wheelhouse dist
           pipx run --python 3.13 delvewheel==1.10 repair dist/*.whl -vv
-          # ls -l wheelhouse/*
-          # uv sync
-          # uv pip install wheelhouse/*.whl
-          # cd .venv
-          # Scripts/python.exe -m pytest ../tests -vv -s
+          ls -l wheelhouse/*
+          uv sync
+          uv pip install wheelhouse/*.whl
+          cd .venv
+          Scripts/python.exe -m pytest ../tests -vv -s
         if: runner.os == 'Windows'
         shell: msys2 {0}
+        env:
+          PYTHONIOENCODING: utf-8
       - uses: pypa/cibuildwheel@v3.1.1
         if: runner.os != 'Windows'
         env:
