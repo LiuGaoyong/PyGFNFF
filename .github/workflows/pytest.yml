@@ -16,8 +16,12 @@ jobs:
             platform_id: manylinux_x86_64
           - os: macos-latest
             python: 312
-            platform_id: macosx_arm64
             macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-13
+            python: 312
+            macos_target: 13
+            platform_id: macosx_x86_64
     steps:
       - name: Provide gfortran (MacOS)
         uses: fortran-lang/setup-fortran@v1
@@ -63,6 +67,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Build wheels (Windows)
         run: |
+          uv python pin cpython"{{ matrix.python }}"
           uv build --wheel
           ls -l dist/*
         shell: msys2 {0}
