@@ -18,7 +18,6 @@ jobs:
             python: 312
             platform_id: macosx_arm64
             macos_target: 14
-
     steps:
       - name: Provide gfortran (MacOS)
         uses: fortran-lang/setup-fortran@v1
@@ -47,7 +46,6 @@ jobs:
           - os: windows-latest
             python: 312
             platform_id: win_amd64
-
     steps:
       - name: Provide gfortran (Windows)
         # https://github.com/actions/runner-images/discussions/7998
@@ -63,9 +61,17 @@ jobs:
             mingw-w64-x86_64-gcc-fortran
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: |
+      - name: Build wheels (Windows)
+        run: |
           uv build --wheel
           ls -l dist/*
+        shell: msys2 {0}
+      - name: Repair wheels (Windows)
+        run: |
           pipx run delvewheel repair dist/*.whl -vv
           ls -l wheelhouse/*
         shell: msys2 {0}
+      - name: Test wheels (Windows)
+        run: |
+          uv pip install wheelhouse/*.whl
+          python -m pytest -s -vv
