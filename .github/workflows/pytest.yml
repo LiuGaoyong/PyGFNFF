@@ -11,48 +11,27 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            python: 312
-            platform_id: manylinux_x86_64
-          - os: macos-latest
-            python: 312
-            platform_id: macosx_arm64
-            macos_target: 14
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Provide gfortran (MacOS)
-        uses: fortran-lang/setup-fortran@v1
-        if: runner.os == 'MacOS'
-        with:
-          compiler: gcc
-      - uses: pypa/cibuildwheel@v3.1.1
-        env:
-          CIBW_ARCHS: all
-          CIBW_BUILD_VERBOSITY: 1
-          CIBW_BEFORE_ALL_MACOS: "brew install openblas"
-          CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
-      - run: ls -l wheelhouse/*
-
-
-  build_wheels_windows:
-    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
+          # - os: ubuntu-latest
+          #   python: 312
+          #   platform_id: manylinux_x86_64
+          # - os: macos-latest
+          #   python: 312
+          #   platform_id: macosx_arm64
+          #   macos_target: 14
           - os: windows-latest
             python: 312
             platform_id: win_amd64
 
     steps:
+      - name: Provide gfortran (MacOS)
+        uses: fortran-lang/setup-fortran@v1
+        if: runner.os == 'MacOS'
+        with:
+          compiler: gcc
       - name: Provide gfortran (Windows)
         # https://github.com/actions/runner-images/discussions/7998
         uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
         id: msys2
         with:
           update: true
@@ -63,18 +42,23 @@ jobs:
       - name: Disable auto conversionon (Windows)
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
-        shell: cmd
+        shell: powershell
+        if: runner.os == 'Windows'
         run: |
           git config --global core.autocrlf input
-          echo "%MSYS2_LOCATION%"
-          ls "%MSYS2_LOCATION%/mingw64/lib"
-          where gfortran.exe
-          gfortran --version
+          echo "$env:MSYS2_LOCATION"
+          ls "$env:MSYS2_LOCATION/mingw64/lib"
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - name: Build wheel by UV (Windows)
-        shell: cmd
-        run: |
-          uv pin python ${{ matrix.python }}
-          uv build --wheel -o wheelhouse
-          ls -l wheelhouse/*
+      - uses: pypa/cibuildwheel@v3.1.1
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas"
+          CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          # add this can compatible with Windows MSYS
+          #   https://github.com/actions/runner-images/discussions/7998
+          CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-GNinja;-DLAPACK_LIBRARIES="${{ steps.msys2.outputs.msys2-location }}/mingw64/lib/libopenblas.dll.a"'
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
+      - run: ls -l wheelhouse/*
