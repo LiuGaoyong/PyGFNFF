@@ -29,10 +29,13 @@ jobs:
         with:
           compiler: gcc
       - name: Provide gfortran (Windows)
-        uses: fortran-lang/setup-fortran@v1
-        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
         with:
-          compiler: intel
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-openblas64
+            mingw-w64-x86_64-ninja
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
@@ -40,13 +43,14 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
-          CIBW_BEFORE_ALL_WINDOWS: >
-            where gfortran.exe    &&
-            where ifx.exe         &&
-            echo %FC%                      &&
-            echo %PATH%                    &&
-            vcpkg install openblas"
+          # CIBW_BEFORE_ALL_WINDOWS: >
+          #   where gfortran.exe    &&
+          #   where ifx.exe         &&
+          #   echo %FC%                      &&
+          #   echo %PATH%                    &&
+          #   vcpkg install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-G "MinGW Makefiles"'
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           # MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
