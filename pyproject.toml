@@ -38,11 +38,10 @@ dev = ["pytest"]
 homepage = "https://github.com/LiuGaoyong/PyGFNFF"
 repository = "https://github.com/LiuGaoyong/PyGFNFF"
 
-
 [tool.scikit-build]
 build.verbose = true
 logging.level = "INFO"
-wheel.packages = ["./pygfnff"]
+sdist.exclude = [".github"]
 wheel.license-files = ["LICENSE"]
 wheel.expand-macos-universal-tags = true
 minimum-version = "build-system.requires"
@@ -61,7 +60,7 @@ test-command = "pytest -s {project}/tests"
 
 # uv config
 [tool.uv]
-package = true
+package = false # editable when uv sync
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
 

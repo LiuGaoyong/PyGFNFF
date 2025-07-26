@@ -25,7 +25,7 @@ def gfnff(
             The second is the forces in Hartree/Bohr.
     """
     try:
-        from . import _pygfnfflib as lib  # type: ignore
+        import pygfnff._pygfnfflib as lib  # type: ignore
     except ImportError:
         raise ImportError("The pygfnff fortran backend not available.")
 

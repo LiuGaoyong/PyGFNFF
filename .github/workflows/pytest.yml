@@ -60,24 +60,3 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
-
-  build_wheels_for_cp312-windows:
-    name: Build wheels for cp312-windows
-    runs-on: windows-latest
-    steps:
-      - name: Provide gfortran (Windows)
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Test wheels (Windows)
-        run: uv run pytest -s
-        shell: msys2 {0}
