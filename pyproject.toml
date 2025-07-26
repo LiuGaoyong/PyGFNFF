@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "scikit-build-core>=0.10",
+    "scikit-build-core>=0.11",
     "charset_normalizer",
     "f2py-cmake",
     "numpy",
