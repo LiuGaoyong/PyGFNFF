@@ -48,7 +48,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_WINDOWS: "pwd && dir 'C:/mingw64/bin' && dir 'C:/mingw64/lib'"
+          CIBW_BEFORE_ALL_WINDOWS: "pacman -S mingw-w64-x86_64-gcc-fortran"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
@@ -81,5 +81,5 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: |
           uv build --wheel
-          ls -l wheelhouse/*
+          ls -l dist/*
         shell: msys2 {0}
