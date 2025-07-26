@@ -50,7 +50,7 @@ jobs:
           #   echo %PATH%                    &&
           #   vcpkg install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-G "MinGW Makefiles"'
+          CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-GNinja'
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           # MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
