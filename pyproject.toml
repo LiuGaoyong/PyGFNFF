@@ -61,7 +61,7 @@ test-command = "pytest -s {project}/tests"
 
 # uv config
 [tool.uv]
-package = false
+package = true
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
 
