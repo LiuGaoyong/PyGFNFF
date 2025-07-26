@@ -48,7 +48,7 @@ wheel.expand-macos-universal-tags = true
 minimum-version = "build-system.requires"
 build-dir = "build/{wheel_tag}"
 ninja.version = ">=1.10"
-cmake.version = ">=3.17.2"
+cmake.version = ">=4.0"
 cmake.build-type = "Release"
 # add this can compatible with Windows MSYS
 #   https://github.com/actions/runner-images/discussions/7998
