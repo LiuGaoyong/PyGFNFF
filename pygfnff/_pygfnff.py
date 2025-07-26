@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from tempfile import mkdtemp
 from typing import Optional
@@ -114,12 +115,15 @@ class GFNFF(ase_calc.Calculator):
             )
 
         try:
+            cwd = Path().cwd()
+            os.chdir(self.directory)
             energy, gradient = gfnff(
                 self.atoms.numbers,
                 self.atoms.positions * U.Angstrom / U.Bohr,
                 solvent=self.__solvent,
                 charge=int(self.atoms.get_initial_charges().sum()),
             )
+            os.chdir(cwd)
         except ImportError as e:
             raise ase_calc.CalculatorError(e)
         except RuntimeError as e:
