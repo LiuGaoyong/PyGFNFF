@@ -9,7 +9,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pygfnff"
-version = "v0.0.2alpha"
+version = "v0.0.2"
 description = "A Python Library for GFN-FF."
 readme = "README.md"
 authors = [{ name = "Liu Gaoyong", email = "liugaoyong_88@163.com" }]
