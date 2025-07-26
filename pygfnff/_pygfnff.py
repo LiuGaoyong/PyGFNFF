@@ -25,8 +25,10 @@ def gfnff(
             The second is the forces in Hartree/Bohr.
     """
     try:
+        import pygfnff  # noqa: F401
         import pygfnff._pygfnfflib as lib  # type: ignore
     except ImportError:
+        print(list[Path(__file__).parent.glob("*")])
         raise ImportError("The pygfnff fortran backend not available.")
 
     numbers = np.asarray(numbers, dtype=int).flatten()
