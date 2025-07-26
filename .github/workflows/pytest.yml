@@ -31,11 +31,15 @@ jobs:
       - name: Provide gfortran (Windows)
         # https://github.com/actions/runner-images/discussions/7998
         uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
         with:
           update: true
           install: >-
             mingw-w64-x86_64-openblas
             mingw-w64-x86_64-ninja
+      - name: Put MSYS2_MinGW64 on PATH
+        run: echo "D:/a/_temp/msys64/mingw64/bin" >> $GITHUB_PATH
+        if: runner.os == 'Windows'
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
