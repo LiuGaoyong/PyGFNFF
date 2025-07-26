@@ -35,16 +35,9 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
 
-  build_wheels_for_windows:
-    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            python: 12
-            platform_id: win_amd64
+  build_wheels_for_cp312-windows:
+    name: Build wheels for cp312-windows
+    runs-on: windows-latest
     steps:
       - name: Provide gfortran (Windows)
         # https://github.com/actions/runner-images/discussions/7998
@@ -62,7 +55,8 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Build wheels (Windows)
         run: |
-          pipx run build --python 3.{{ matrix.python }} --wheel
+          uv python pin cpython312
+          uv build --wheel
           dir dist
       - name: Repair wheels (Windows)
         run: |
