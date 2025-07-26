@@ -23,11 +23,6 @@ jobs:
             macos_target: 13
             platform_id: macosx_x86_64
     steps:
-      - name: Provide gfortran (MacOS)
-        uses: fortran-lang/setup-fortran@v1
-        if: runner.os == 'MacOS'
-        with:
-          compiler: gcc
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
@@ -35,7 +30,7 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_MACOS: "brew install --overwrite openblas"
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
@@ -48,7 +43,7 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            python: 312
+            python: 12
             platform_id: win_amd64
     steps:
       - name: Provide gfortran (Windows)
@@ -67,9 +62,8 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Build wheels (Windows)
         run: |
-          uv python pin cpython{{ matrix.python }}
-          uv build --wheel
-          dir dist/*
+          pipx run build --python 3.{{ matrix.python }} --wheel
+          dir dist
       - name: Repair wheels (Windows)
         run: |
           pipx run delvewheel repair dist/*.whl -vv
