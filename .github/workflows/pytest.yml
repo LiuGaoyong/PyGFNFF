@@ -63,6 +63,8 @@ jobs:
           Scripts/python.exe -m pytest ../tests -vv -s
         if: runner.os == 'Windows'
         shell: msys2 {0}
+        env:
+          PYTHONIOENCODING: utf-8
       - uses: pypa/cibuildwheel@v3.1.1
         if: runner.os != 'Windows'
         env:
