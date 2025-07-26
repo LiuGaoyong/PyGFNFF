@@ -109,7 +109,7 @@ class GFNFF(ase_calc.Calculator):
         """Perform actual calculation by GFNFF."""
         super().calculate(atoms, properties, system_changes)
         assert isinstance(self.atoms, Atoms)
-        if any(self.atoms.pbc) or self.atoms.cell.array:
+        if any(self.atoms.pbc) or self.atoms.cell.array.any():
             raise ase_calc.CalculatorSetupError(
                 "PBC system is not supported yet by pygfnff backend."
             )
