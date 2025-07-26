@@ -39,10 +39,9 @@ jobs:
           install: >-
             mingw-w64-x86_64-openblas
             mingw-w64-x86_64-gcc-fortran
-      - name: Put MSYS2_MinGW64 on PATH
-        # https://github.com/actions/runner-images/discussions/7998
-        run: echo "D:/a/_temp/msys64/mingw64/bin" >> $GITHUB_PATH
+      - name: Show PATH (Windows)
         if: runner.os == 'Windows'
+        run: dir "D:/a/_temp/msys64/mingw64/bin"
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
@@ -51,7 +50,10 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_WINDOWS: "echo %PATH%"
+          CIBW_BEFORE_ALL_WINDOWS: >
+            echo %PATH%                                     &&
+            set PATH=D:\a\_temp\msys64\mingw64\bin;%PATH%   &&
+            echo && echo %PATH%
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
