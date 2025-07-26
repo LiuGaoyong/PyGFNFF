@@ -50,7 +50,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_WINDOWS: "echo %PATH% && set PATH=D:\\a\\_temp\\msys64\\mingw64\\bin;%PATH% && echo %PATH%"
+          CIBW_BEFORE_ALL_WINDOWS: "set PATH=D:\\a\\_temp\\msys64\\mingw64\\bin;%PATH%"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
