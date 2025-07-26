@@ -47,7 +47,7 @@ jobs:
         run: |
           git config --global core.autocrlf input
           echo "$env:MSYS2_LOCATION"
-          ls "$env:MSYS2_LOCATION"
+          ls "$env:MSYS2_LOCATION/mingw64/bin"
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
@@ -56,10 +56,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_Windows: "echo %PATH%"
-          # add this can compatible with Windows MSYS
-          #   https://github.com/actions/runner-images/discussions/7998
-          CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-GNinja;-DBLAS_LIBRARIES=${{ steps.msys2.outputs.msys2-location }}/mingw64/lib/libopenblas.a'
+          CIBW_BEFORE_ALL_Windows: "set && set PATH=${{ steps.msys2.outputs.msys2-location }}/mingw64/bin;%PATH% && set"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           # MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
