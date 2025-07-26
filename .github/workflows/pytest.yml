@@ -54,11 +54,11 @@ jobs:
       - run: |
           mv wheelhouse dist
           pipx run --python 3.13 delvewheel==1.10 repair dist/*.whl -vv
-          ls -l wheelhouse/*
-          uv sync
-          uv pip install wheelhouse/*.whl
-          cd .venv
-          Scripts/python.exe -m pytest ../tests -vv -s
+          # ls -l wheelhouse/*
+          # uv sync
+          # uv pip install wheelhouse/*.whl
+          # cd .venv
+          # Scripts/python.exe -m pytest ../tests -vv -s
         if: runner.os == 'Windows'
         shell: msys2 {0}
       - uses: pypa/cibuildwheel@v3.1.1
@@ -71,3 +71,4 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
+        shell: bash

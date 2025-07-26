@@ -153,6 +153,7 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_TEST_COMMAND_WINDOWS: ""
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
       - run: |
           mv wheelhouse dist
@@ -164,6 +165,7 @@ jobs:
         env:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
           CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
