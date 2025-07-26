@@ -66,6 +66,7 @@ jobs:
         shell: msys2 {0}
       - name: Test wheels (Windows)
         run: |
+          uv venv
           uv pip install wheelhouse/*.whl pytest
           python -m pytest -s -vv
         shell: msys2 {0}
