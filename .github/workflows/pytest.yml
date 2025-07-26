@@ -11,16 +11,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - os: ubuntu-latest
-          #   python: 312
-          #   platform_id: manylinux_x86_64
-          # - os: macos-latest
-          #   python: 312
-          #   platform_id: macosx_arm64
-          #   macos_target: 14
-          - os: windows-latest
+          - os: ubuntu-latest
             python: 312
-            platform_id: win_amd64
+            platform_id: manylinux_x86_64
+          - os: macos-latest
+            python: 312
+            platform_id: macosx_arm64
+            macos_target: 14
 
     steps:
       - name: Provide gfortran (MacOS)
@@ -28,20 +25,6 @@ jobs:
         if: runner.os == 'MacOS'
         with:
           compiler: gcc
-      - name: Provide gfortran (Windows)
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        id: msys2
-        with:
-          update: true
-          cache: true
-          path-type: inherit
-          install: >-
-            mingw-w64-x86_64-openblas
-            mingw-w64-x86_64-gcc-fortran
-      - name: Show PATH (Windows)
-        if: runner.os == 'Windows'
-        run: dir "D:/a/_temp/msys64/mingw64/bin"
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
@@ -50,7 +33,6 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_WINDOWS: "set PATH=D:\\a\\_temp\\msys64\\mingw64\\bin;%PATH%"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
@@ -84,4 +66,6 @@ jobs:
       - run: |
           uv build --wheel
           ls -l dist/*
+          pipx run delvewheel repair dist/*.whl -vv
+          ls -l wheelhouse/*
         shell: msys2 {0}
