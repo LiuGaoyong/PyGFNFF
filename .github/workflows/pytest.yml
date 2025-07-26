@@ -39,7 +39,11 @@ jobs:
           install: >-
             mingw-w64-x86_64-openblas
             mingw-w64-x86_64-gcc-fortran
-      - run: pipx run cibuildwheel==3.1.1
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Windows'
+        with:
+          python-version: '3.13'
+      - run: pipx run --python 3.13 cibuildwheel==3.1.1
         if: runner.os == 'Windows'
         shell: msys2 {0}
         env:
