@@ -37,7 +37,7 @@ jobs:
           cache: true
           path-type: inherit
           install: >-
-            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-lapack
             mingw-w64-x86_64-ninja
       - name: disable the auto conversion of line endings on Windows
         shell: cmd
