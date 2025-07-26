@@ -2,9 +2,7 @@
 requires = [
     "scikit-build-core>=0.10",
     "charset_normalizer",
-    "cmake>=4.0.0",
     "f2py-cmake",
-    "ninja>=1",
     "numpy",
 ]
 build-backend = "scikit_build_core.build"
@@ -54,7 +52,7 @@ cmake.version = ">=3.17.2"
 cmake.build-type = "Release"
 # add this can compatible with Windows MSYS
 #   https://github.com/actions/runner-images/discussions/7998
-cmake.args = ["-GNinja"]
+cmake.args = ["-GNinja", "-DBLA_VENDOR=OpenBLAS"]
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
