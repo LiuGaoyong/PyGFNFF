@@ -57,11 +57,13 @@ jobs:
         run: |
           uv python pin cpython312
           uv build --wheel
-          dir dist
+          ls -l dist
+        shell: msys2 {0}
       - name: Repair wheels (Windows)
         run: |
           pipx run delvewheel repair dist/*.whl -vv
-          dir wheelhouse
+          ls -l wheelhouse
+        shell: msys2 {0}
       - name: Test wheels (Windows)
         run: |
           uv pip install wheelhouse/*.whl pytest
