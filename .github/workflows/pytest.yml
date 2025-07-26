@@ -34,8 +34,8 @@ jobs:
         with:
           update: true
           install: >-
-            mingw-w64-ninja
-            mingw-w64-openblas
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-ninja
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
