@@ -11,6 +11,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: windows-latest
+            python: 312
+            platform_id: win_amd64
           - os: ubuntu-latest
             python: 312
             platform_id: manylinux_x86_64
@@ -25,7 +28,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+      - name: Provide gfortran (Windows)
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        id: msys2
+        with:
+          update: true
+          cache: true
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-gcc-fortran
+      - run: pipx run cibuildwheel==3.1.1
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        env:
+          CIBW_ARCHS: all
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
       - uses: pypa/cibuildwheel@v3.1.1
+        if: runner.os != 'Windows'
         env:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
@@ -40,7 +62,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Provide gfortran (Windows)
-        # https://github.com/actions/runner-images/discussions/7998
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
         id: msys2
@@ -53,20 +74,6 @@ jobs:
             mingw-w64-x86_64-gcc-fortran
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - name: Build wheels (Windows)
-        run: |
-          uv python pin cpython312
-          uv build --wheel
-          ls -l dist
-        shell: msys2 {0}
-      - name: Repair wheels (Windows)
-        run: |
-          pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse
-        shell: msys2 {0}
       - name: Test wheels (Windows)
-        run: |
-          uv venv
-          uv pip install wheelhouse/*.whl pytest
-          python -m pytest -s -vv
+        run: uv run pytest -s
         shell: msys2 {0}
