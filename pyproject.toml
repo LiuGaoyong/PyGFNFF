@@ -1,10 +1,11 @@
 [build-system]
 requires = [
     "scikit-build-core>=0.10",
-    "numpy",
     "charset_normalizer",
+    "cmake>=4.0.0",
     "f2py-cmake",
-    "ninja",
+    "ninja>=1",
+    "numpy",
 ]
 build-backend = "scikit_build_core.build"
 
