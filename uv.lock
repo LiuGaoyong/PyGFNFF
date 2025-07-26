@@ -1,6 +1,6 @@
 version = 1
 revision = 2
-requires-python = ">=3.9, <=3.13"
+requires-python = ">=3.9"
 resolution-markers = [
     "python_full_version >= '3.11'",
     "python_full_version == '3.10.*'",
@@ -239,7 +239,7 @@ wheels = [
 [[package]]
 name = "pygfnff"
 version = "0.0.1a0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "numpy", version = "2.0.2", source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }, marker = "python_full_version < '3.10'" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }, marker = "python_full_version == '3.10.*'" },

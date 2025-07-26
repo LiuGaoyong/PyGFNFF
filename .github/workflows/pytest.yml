@@ -34,8 +34,15 @@ jobs:
         if: runner.os == 'Windows'
         with:
           update: true
+          cache: true
+          path-type: inherit
           install: >-
+            mingw-w64-x86_64-openblas
             mingw-w64-x86_64-ninja
+      - name: disable the auto conversion of line endings on Windows
+        shell: cmd
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf input
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - uses: pypa/cibuildwheel@v3.1.1
@@ -44,8 +51,8 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_BEFORE_ALL_Windows: "echo %PATH%"
           CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-GNinja'
-          CIBW_BEFORE_ALL_WINDOWS: "vcpkg install --triplet=x64-windows-static openblas"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           # MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
