@@ -35,10 +35,16 @@ jobs:
         with:
           update: true
           install: >-
-            mingw-w64-x86_64-openblas
             mingw-w64-x86_64-ninja
-      - name: Put MSYS2_MinGW64 on PATH
-        run: echo "D:/a/_temp/msys64/mingw64/bin" >> $GITHUB_PATH
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-openblas
+      - name: Put MSYS2_MinGW64 on PATH (Windows)
+        run: |
+          echo "D:/a/_temp/msys64/mingw64/bin" >> $GITHUB_PATH
+          where cmake.exe
+          which cmake
+          cmake --version
+        shell: cmd
         if: runner.os == 'Windows'
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -48,6 +54,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_BEFORE_ALL_WINDOWS: "echo %PATH%"
           CIBW_ENVIRONMENT_WINDOWS: SKBUILD_CMAKE_ARGS='-GNinja'
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           # MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
