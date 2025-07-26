@@ -68,3 +68,4 @@ jobs:
         run: |
           uv pip install wheelhouse/*.whl pytest
           python -m pytest -s -vv
+        shell: msys2 {0}
