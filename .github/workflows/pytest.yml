@@ -34,8 +34,8 @@ jobs:
         env:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
-          CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
+          CIBW_BEFORE_ALL_MACOS: "brew install --overwrite openblas"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
@@ -67,16 +67,14 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Build wheels (Windows)
         run: |
-          uv python pin cpython"{{ matrix.python }}"
+          uv python pin cpython{{ matrix.python }}
           uv build --wheel
-          ls -l dist/*
-        shell: msys2 {0}
+          dir dist/*
       - name: Repair wheels (Windows)
         run: |
           pipx run delvewheel repair dist/*.whl -vv
-          ls -l wheelhouse/*
-        shell: msys2 {0}
+          dir wheelhouse
       - name: Test wheels (Windows)
         run: |
-          uv pip install wheelhouse/*.whl
+          uv pip install wheelhouse/*.whl pytest
           python -m pytest -s -vv
