@@ -1,6 +1,7 @@
 # PyGFNFF
 
 [![Pypi version](https://img.shields.io/pypi/v/pygfnff)](https://pypi.org/project/pygfnff/)
+[![PyPI Downloads](https://static.pepy.tech/badge/pygfnff)](https://pepy.tech/projects/pygfnff)
 
 This is a Python version for [GFN-FF](https://github.com/pprcht/gfnff) based on F2PY.
 
