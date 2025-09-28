@@ -9,7 +9,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pygfnff"
-version = "v0.0.2"
+version = "v0.0.3"
 description = "A Python Library for GFN-FF."
 readme = "README.md"
 authors = [{ name = "Liu Gaoyong", email = "liugaoyong_88@163.com" }]
@@ -74,6 +74,6 @@ testpaths = ["tests"]
 line-length = 80
 indent-width = 4
 select = ["F", "E", "W", "UP", "D"]
-ignore = ["D100", "D103", "D104", "F722", 'UP038']
+ignore = ["D100", "D103", "D104", "F722"]
 [tool.ruff.pydocstyle]
 convention = "google"

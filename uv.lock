@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 1
 requires-python = ">=3.9"
 resolution-markers = [
     "python_full_version >= '3.11'",
@@ -904,7 +904,7 @@ wheels = [
 
 [[package]]
 name = "pygfnff"
-version = "0.0.2"
+version = "0.0.3"
 source = { virtual = "." }
 dependencies = [
     { name = "ase" },
