@@ -22,6 +22,7 @@ from pygfnff import GFNFF
 atoms = Atoms(molecule("CO"), calculator=GFNFF())
 opt = BFGS(atoms, logfile="-", trajectory=None)
 opt.run(fmax=0.03, steps=50)
+e = atoms.get_potential_energy()
 print(f"Energy: {e:.3f}eV")
 print(f"C=O Length: {bl:.3f}\u212b")
 
