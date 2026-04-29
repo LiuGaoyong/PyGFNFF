@@ -76,5 +76,6 @@ jobs:
           CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
+          CIBW_ENVIRONMENT_MACOS: FC=gfortran
       - run: ls -l wheelhouse/*
         shell: bash

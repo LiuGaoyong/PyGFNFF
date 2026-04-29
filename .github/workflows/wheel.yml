@@ -292,10 +292,10 @@ jobs:
         env:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
+          CIBW_ENVIRONMENT_MACOS: FC=gfortran
           CIBW_ENABLE: ${{ matrix.cibw_enable }}
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
           CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
-          CIBW_ENVIRONMENT_MACOS: CC=gcc-13 CXX=g++-13 FC=gfortran-13
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
@@ -369,6 +369,6 @@ jobs:
           conda config --set anaconda_upload yes
           export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
           for file in conda-dist/*; do
-            anaconda upload $file -c conda-forge;
+            anaconda upload $file -c conda-forge
           done
         shell: micromamba-shell {0}
