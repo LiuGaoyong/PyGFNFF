@@ -36,6 +36,13 @@ jobs:
             python: 313t
             platform_id: win_amd64
             cibw_enable: cpython-freethreading
+          - os: windows-latest
+            python: 314
+            platform_id: win_amd64
+          - os: windows-latest
+            python: 314t
+            platform_id: win_amd64
+            cibw_enable: cpython-freethreading
           # linux-64 for manylinux2014
           - os: ubuntu-latest
             python: 39
@@ -59,6 +66,15 @@ jobs:
             manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 313t
+            platform_id: manylinux_x86_64
+            cibw_enable: cpython-freethreading
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 314
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+          - os: ubuntu-latest
+            python: 314t
             platform_id: manylinux_x86_64
             cibw_enable: cpython-freethreading
             manylinux_image: manylinux2014
@@ -88,6 +104,15 @@ jobs:
             platform_id: manylinux_aarch64
             cibw_enable: cpython-freethreading
             manylinux_image: manylinux2014
+          - os: ubuntu-24.04-arm
+            python: 314
+            platform_id: manylinux_aarch64
+            manylinux_image: manylinux2014
+          - os: ubuntu-24.04-arm
+            python: 314t
+            platform_id: manylinux_aarch64
+            cibw_enable: cpython-freethreading
+            manylinux_image: manylinux2014
           # linux-64 for manylinux_2_28
           - os: ubuntu-latest
             python: 39
@@ -111,6 +136,15 @@ jobs:
             manylinux_image: manylinux_2_28
           - os: ubuntu-latest
             python: 313t
+            platform_id: manylinux_x86_64
+            cibw_enable: cpython-freethreading
+            manylinux_image: manylinux_2_28
+          - os: ubuntu-latest
+            python: 314
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux_2_28
+          - os: ubuntu-latest
+            python: 314t
             platform_id: manylinux_x86_64
             cibw_enable: cpython-freethreading
             manylinux_image: manylinux_2_28
@@ -140,6 +174,15 @@ jobs:
             platform_id: manylinux_aarch64
             cibw_enable: cpython-freethreading
             manylinux_image: manylinux_2_28
+          - os: ubuntu-24.04-arm
+            python: 314
+            platform_id: manylinux_aarch64
+            manylinux_image: manylinux_2_28
+          - os: ubuntu-24.04-arm
+            python: 314t
+            platform_id: manylinux_aarch64
+            cibw_enable: cpython-freethreading
+            manylinux_image: manylinux_2_28
           # macos-x86-64
           - os: macos-13
             python: 39
@@ -166,6 +209,15 @@ jobs:
             macos_target: 13
             platform_id: macosx_x86_64
             cibw_enable: cpython-freethreading
+          - os: macos-13
+            python: 314
+            macos_target: 13
+            platform_id: macosx_x86_64
+          - os: macos-13
+            python: 314t
+            macos_target: 13
+            platform_id: macosx_x86_64
+            cibw_enable: cpython-freethreading
           # macos-arm64
           - os: macos-14
             python: 39
@@ -189,6 +241,15 @@ jobs:
             platform_id: macosx_arm64
           - os: macos-14
             python: 313t
+            macos_target: 14
+            platform_id: macosx_arm64
+            cibw_enable: cpython-freethreading
+          - os: macos-14
+            python: 314
+            macos_target: 14
+            platform_id: macosx_arm64
+          - os: macos-14
+            python: 314t
             macos_target: 14
             platform_id: macosx_arm64
             cibw_enable: cpython-freethreading
@@ -273,3 +334,41 @@ jobs:
           path: dist
           merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  convert_wheel_2_conda_and_publish:
+    needs: [build_wheels]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+      - run: |
+          # install dependencies
+          brew install -y python rattler-build pipx;
+          pipx install whl2conda;
+          # convert wheels to conda packages
+          for wheel in dist/*.whl; do
+            pipx run whl2conda    \
+              convert   ${wheel}  \
+              --out-dir conda-dist;
+          done
+          # list them out for inspection
+          echo '==================================='
+          ls -l conda-dist/*
+          echo '==================================='
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          create-args: >-
+            anaconda-client
+            conda-verify
+            conda-build
+            numpy
+      - run: |
+          conda config --set anaconda_upload yes
+          export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
+          for file in conda-dist/*; do
+            anaconda upload $file
+          done
+        shell: micromamba-shell {0}
