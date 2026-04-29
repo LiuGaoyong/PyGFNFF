@@ -369,6 +369,6 @@ jobs:
           conda config --set anaconda_upload yes
           export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
           for file in conda-dist/*; do
-            anaconda upload $file
+            anaconda upload $file -c conda-forge;
           done
         shell: micromamba-shell {0}
