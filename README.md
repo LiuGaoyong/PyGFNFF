@@ -3,9 +3,45 @@
 [![Pypi version](https://img.shields.io/pypi/v/pygfnff)](https://pypi.org/project/pygfnff/)
 [![PyPI Downloads](https://static.pepy.tech/badge/pygfnff)](https://pepy.tech/projects/pygfnff)
 
-This is a Python version for [GFN-FF](https://github.com/pprcht/gfnff) based on F2PY.
+PyGFNFF is a Python library that provides the [GFN-FF](https://github.com/pprcht/gfnff) (Generic Force Field) method for computational chemistry calculations. It is based on F2PY (Fortran to Python interface) and integrates with the Atomic Simulation Environment (ASE).
 
 ---
+
+## Project Structure
+
+```
+PyGFNFF/
+├── pygfnff/              # Python package
+│   ├── __init__.py       # Exports GFNFF calculator and gfnff function
+│   └── _pygfnff.py       # Main implementation
+├── fortran/              # Fortran source code
+│   ├── gfnff_*.f90       # GFN-FF modules
+│   ├── _pygfnfflib.f90   # F2PY interface
+│   ├── CMakeLists.txt    # Fortran build configuration
+│   └── gbsa/             # GBSA solvation model
+├── include/              # C header and parameter files
+│   ├── gfnff_interface_c.h
+│   └── param_*.fh        # Parameter files for solvents
+├── tests/                # Test suite
+│   ├── test_co_by_ase.py
+│   └── test_coffeine.py
+├── CMakeLists.txt        # Root CMake configuration
+└── pyproject.toml        # Python project configuration
+```
+
+## Key Components
+
+### Python Interface (`pygfnff/`)
+
+- **`GFNFF`**: ASE Calculator subclass for non-PBC systems
+- **`gfnff()`**: Low-level function for single-point energy calculations
+
+### Fortran Backend (`fortran/`)
+
+- GFN-FF implementation derived from https://github.com/pprcht/gfnff (commit 0491df2)
+- GBSA solvation model support (optional, enabled via CMake `WITH_GBSA`)
+- F2PY bindings via `_pygfnfflib.f90`
+
 
 ## Usage
 

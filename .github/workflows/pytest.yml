@@ -11,13 +11,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             python: 312
             platform_id: win_amd64
           - os: ubuntu-latest
             python: 312
             platform_id: manylinux_x86_64
-          - os: macos-latest
+          - os: macos-14
             python: 312
             macos_target: 14
             platform_id: macosx_arm64
@@ -65,6 +65,12 @@ jobs:
         shell: msys2 {0}
         env:
           PYTHONIOENCODING: utf-8
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        if: runner.os != 'Windows'
+        with:
+          compiler: gcc
+          version: latest
       - uses: pypa/cibuildwheel@v3.1.1
         if: runner.os != 'Windows'
         env:
@@ -73,7 +79,7 @@ jobs:
           UV_INDEX: https://pypi.org/simple
           UV_DEFAULT_INDEX: https://pypi.org/simple
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
-          CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
+          CIBW_BEFORE_ALL_MACOS: "brew install openblas"
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
       - run: ls -l wheelhouse/*
