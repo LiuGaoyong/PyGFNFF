@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.17.2...3.26)
 
+# The version comes from pyproject.toml (via scikit-build-core).
+if(NOT DEFINED SKBUILD_PROJECT_VERSION)
+  set(SKBUILD_PROJECT_VERSION 0.0.0)
+endif()
+
 project(
   _pygfnff
-  VERSION 0.0.1
+  VERSION ${SKBUILD_PROJECT_VERSION}
   LANGUAGES C Fortran
 )
 
@@ -12,11 +17,11 @@ project(
 # General configuration information
 # Compiler settings for GNU and Intel Fortran compilers
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  set(dialect "-g -O0 -fbacktrace -ffree-line-length-none -fbacktrace")
-  set(bounds "-fbounds-check -ffpe-trap=invalid,zero,overflow")
+  set(dialect "-ffree-line-length-none")
+  set(bounds "-g -O0 -fbacktrace -fbounds-check -ffpe-trap=invalid,zero,overflow")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  set(dialect "-g -O2 -r8 -align array64byte -traceback")
-  set(bounds "-check all -fpe0")
+  set(dialect "-r8 -align array64byte")
+  set(bounds "-g -traceback -check all -fpe0")
 else()
   message(FATAL_ERROR "Please use an Intel or GNU compiler!")
 endif()
@@ -37,12 +42,14 @@ endif()
 # Linear algebra (contains BLAS)
 # Compatible with Windows MSYS
 #   https://www.soinside.com/question/JW92rdzwmdNuSooN8P4Tx7
-set(CMAKE_FIND_LIBRARY_PREFIXES ";lib")
-message(STATUS "BLAS libraries: ${BLAS_LIBRARIES}")
-message(STATUS "LAPACK libraries: ${LAPACK_LIBRARIES}")
+if(WIN32)
+  set(CMAKE_FIND_LIBRARY_PREFIXES ";lib")
+endif()
 if(NOT TARGET "LAPACK::LAPACK")
     find_package("LAPACK" REQUIRED)
 endif()
+message(STATUS "BLAS libraries: ${BLAS_LIBRARIES}")
+message(STATUS "LAPACK libraries: ${LAPACK_LIBRARIES}")
 set(
   lib-deps
   "OpenMP::OpenMP_Fortran"
@@ -86,6 +93,20 @@ endif()
 ########################################################################
 # Python, Numpy & F2PY headers, fortranobject dependencies
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module NumPy)
+# UseF2Py puts the f2py include directory into source file paths as it is
+# printed by Python. On Windows it contains backslashes, which CMake may
+# reject as invalid escape sequences, so provide it in CMake style.
+execute_process(
+  COMMAND "${Python_EXECUTABLE}" -c
+          "import numpy.f2py; print(numpy.f2py.get_include())"
+  OUTPUT_VARIABLE f2py_include_dir
+  RESULT_VARIABLE f2py_include_result
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(f2py_include_result EQUAL 0)
+  file(TO_CMAKE_PATH "${f2py_include_dir}" f2py_include_dir)
+  set(F2PY_INCLUDE_DIR "${f2py_include_dir}" CACHE STRING "")
+endif()
 include(UseF2Py)
 # Create the F2Py `numpyobject` library.
 f2py_object_library(f2py_object OBJECT)

@@ -9,13 +9,13 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pygfnff"
-version = "v0.0.3"
+version = "0.0.4"
 description = "A Python Library for GFN-FF."
 readme = "README.md"
 authors = [{ name = "Liu Gaoyong", email = "liugaoyong_88@163.com" }]
 license = { file = "LICENSE" }
 classifiers = [
-    'Development Status :: 5 - Production/Stable',
+    'Development Status :: 4 - Beta',
     'Environment :: Console',
     'Environment :: Other Environment',
     'Intended Audience :: Education',
@@ -32,7 +32,7 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = ["ase", "numpy", "typing_extensions"]
 [dependency-groups]
-dev = ["pytest"]
+dev = ["pytest", "scipy"]
 
 [project.urls]
 homepage = "https://github.com/LiuGaoyong/PyGFNFF"
@@ -55,12 +55,12 @@ cmake.args = ["-GNinja"]
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
-test-requires = "pytest"
+test-requires = ["pytest", "scipy"]
 test-command = "pytest -s {project}/tests"
 
 # uv config
 [tool.uv]
-package = false # editable when uv sync
+package = false # `uv sync` only installs the dependencies, not pygfnff
 [[tool.uv.index]]
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
 
@@ -73,7 +73,8 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 80
 indent-width = 4
+[tool.ruff.lint]
 select = ["F", "E", "W", "UP", "D"]
 ignore = ["D100", "D103", "D104", "F722"]
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
