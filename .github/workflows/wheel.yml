@@ -31,8 +31,8 @@ jobs:
           - os: macos-15-intel
             macos_target: 15
             platform_id: macosx_x86_64
-          - os: macos-14
-            macos_target: 14
+          - os: macos-15
+            macos_target: 15
             platform_id: macosx_arm64
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
         shell: msys2 {0}
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
-        if: runner.os != 'Windows'
+        if: runner.os == 'macOS'
         with:
           compiler: gcc
           version: latest

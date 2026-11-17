@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18...4.0)
+cmake_minimum_required(VERSION 3.17.2...3.26)
 
 # The version comes from pyproject.toml (via scikit-build-core).
 if(NOT DEFINED SKBUILD_PROJECT_VERSION)
@@ -93,6 +93,20 @@ endif()
 ########################################################################
 # Python, Numpy & F2PY headers, fortranobject dependencies
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module NumPy)
+# UseF2Py puts the f2py include directory into source file paths as it is
+# printed by Python. On Windows it contains backslashes, which CMake may
+# reject as invalid escape sequences, so provide it in CMake style.
+execute_process(
+  COMMAND "${Python_EXECUTABLE}" -c
+          "import numpy.f2py; print(numpy.f2py.get_include())"
+  OUTPUT_VARIABLE f2py_include_dir
+  RESULT_VARIABLE f2py_include_result
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(f2py_include_result EQUAL 0)
+  file(TO_CMAKE_PATH "${f2py_include_dir}" f2py_include_dir)
+  set(F2PY_INCLUDE_DIR "${f2py_include_dir}" CACHE STRING "")
+endif()
 include(UseF2Py)
 # Create the F2Py `numpyobject` library.
 f2py_object_library(f2py_object OBJECT)
