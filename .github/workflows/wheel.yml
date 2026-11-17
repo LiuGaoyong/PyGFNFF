@@ -1,258 +1,39 @@
 name: Build, Test & Publish to PyPI
 
 on:
-  release:
-    types: [published]
   push:
     tags:
-      - "v*" # Alternative: only build for tags.
-  # pull_request:
+      - "v*"
+  workflow_dispatch: # build only, nothing is published
 
 jobs:
   build_wheels:
-    name: Build wheels for cp${{ matrix.python }}-${{ matrix.platform_id }}${{ matrix.manylinux_image }}
+    # Every job builds the wheels of all supported CPython versions
+    # (cp39 - cp314, incl. the free-threaded cp313t & cp314t), see
+    # `requires-python` in pyproject.toml.
+    name: Build wheels for ${{ matrix.platform_id }} ${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # win-64
-          - os: windows
-            python: 39
-            platform_id: win_amd64
           - os: windows-2022
-            python: 310
             platform_id: win_amd64
-          - os: windows-2022
-            python: 311
-            platform_id: win_amd64
-          - os: windows-2022
-            python: 312
-            platform_id: win_amd64
-          - os: windows-2022
-            python: 313
-            platform_id: win_amd64
-          - os: windows-2022
-            python: 313t
-            platform_id: win_amd64
-            cibw_enable: cpython-freethreading
-          - os: windows-2022
-            python: 314
-            platform_id: win_amd64
-          - os: windows-2022
-            python: 314t
-            platform_id: win_amd64
-            cibw_enable: cpython-freethreading
-          # linux-64 for manylinux2014
           - os: ubuntu-latest
-            python: 39
             platform_id: manylinux_x86_64
             manylinux_image: manylinux2014
           - os: ubuntu-latest
-            python: 310
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 311
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 312
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 313
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 313t
-            platform_id: manylinux_x86_64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 314
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux2014
-          - os: ubuntu-latest
-            python: 314t
-            platform_id: manylinux_x86_64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux2014
-          # linux-aarch64 for manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 39
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 310
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 311
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 312
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 313
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 313t
-            platform_id: manylinux_aarch64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 314
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux2014
-          - os: ubuntu-24.04-arm
-            python: 314t
-            platform_id: manylinux_aarch64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux2014
-          # linux-64 for manylinux_2_28
-          - os: ubuntu-latest
-            python: 39
             platform_id: manylinux_x86_64
             manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 310
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 311
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 312
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 313
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 313t
-            platform_id: manylinux_x86_64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 314
-            platform_id: manylinux_x86_64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-latest
-            python: 314t
-            platform_id: manylinux_x86_64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux_2_28
-          # linux-aarch64 for manylinux_2_28
           - os: ubuntu-24.04-arm
-            python: 39
             platform_id: manylinux_aarch64
             manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 310
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 311
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 312
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 313
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 313t
-            platform_id: manylinux_aarch64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 314
-            platform_id: manylinux_aarch64
-            manylinux_image: manylinux_2_28
-          - os: ubuntu-24.04-arm
-            python: 314t
-            platform_id: manylinux_aarch64
-            cibw_enable: cpython-freethreading
-            manylinux_image: manylinux_2_28
-          # macos-x86-64
-          - os: macos-13
-            python: 39
-            macos_target: 13
+          - os: macos-15-intel
+            macos_target: 15
             platform_id: macosx_x86_64
-          - os: macos-13
-            python: 310
-            macos_target: 13
-            platform_id: macosx_x86_64
-          - os: macos-13
-            python: 311
-            macos_target: 13
-            platform_id: macosx_x86_64
-          - os: macos-13
-            python: 312
-            macos_target: 13
-            platform_id: macosx_x86_64
-          - os: macos-13
-            python: 313
-            macos_target: 13
-            platform_id: macosx_x86_64
-          - os: macos-13
-            python: 313t
-            macos_target: 13
-            platform_id: macosx_x86_64
-            cibw_enable: cpython-freethreading
-          - os: macos-13
-            python: 314
-            macos_target: 13
-            platform_id: macosx_x86_64
-          - os: macos-13
-            python: 314t
-            macos_target: 13
-            platform_id: macosx_x86_64
-            cibw_enable: cpython-freethreading
-          # macos-arm64
           - os: macos-14
-            python: 39
             macos_target: 14
             platform_id: macosx_arm64
-          - os: macos-14
-            python: 310
-            macos_target: 14
-            platform_id: macosx_arm64
-          - os: macos-14
-            python: 311
-            macos_target: 14
-            platform_id: macosx_arm64
-          - os: macos-14
-            python: 312
-            macos_target: 14
-            platform_id: macosx_arm64
-          - os: macos-14
-            python: 313
-            macos_target: 14
-            platform_id: macosx_arm64
-          - os: macos-14
-            python: 313t
-            macos_target: 14
-            platform_id: macosx_arm64
-            cibw_enable: cpython-freethreading
-          - os: macos-14
-            python: 314
-            macos_target: 14
-            platform_id: macosx_arm64
-          - os: macos-14
-            python: 314t
-            macos_target: 14
-            platform_id: macosx_arm64
-            cibw_enable: cpython-freethreading
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -278,8 +59,8 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_TEST_COMMAND_WINDOWS: ""
-          CIBW_ENABLE: ${{ matrix.cibw_enable }}
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ENABLE: cpython-freethreading
+          CIBW_BUILD: cp*-${{ matrix.platform_id }}
           UV_DEFAULT_INDEX: https://pypi.org/simple
           UV_INDEX: https://pypi.org/simple
       - run: |
@@ -299,11 +80,12 @@ jobs:
           CIBW_ARCHS: all
           CIBW_BUILD_VERBOSITY: 1
           CIBW_ENVIRONMENT_MACOS: FC=gfortran
-          CIBW_ENABLE: ${{ matrix.cibw_enable }}
+          CIBW_ENABLE: cpython-freethreading
           CIBW_BEFORE_ALL_LINUX: "yum install -y openblas-devel"
           CIBW_BEFORE_ALL_MACOS: "brew install openblas gfortran"
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: cp*-${{ matrix.platform_id }}
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_AARCH64_IMAGE: ${{ matrix.manylinux_image }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}.0
           UV_DEFAULT_INDEX: https://pypi.org/simple
           UV_INDEX: https://pypi.org/simple
@@ -311,7 +93,7 @@ jobs:
         shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-cp${{ matrix.python }}-${{ matrix.platform_id }}${{ matrix.manylinux_image }}-${{ strategy.job-index }}
+          name: cibw-wheels-${{ matrix.platform_id }}${{ matrix.manylinux_image }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -344,10 +126,11 @@ jobs:
   convert_wheel_2_conda_and_publish:
     needs: [build_wheels]
     runs-on: macos-latest
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: cibw-*
+          pattern: cibw-wheels-*
           path: dist
           merge-multiple: true
       - run: |
@@ -373,8 +156,9 @@ jobs:
             numpy
       - run: |
           conda config --set anaconda_upload yes
-          export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
           for file in conda-dist/*; do
             anaconda upload $file -c conda-forge
           done
         shell: micromamba-shell {0}
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}

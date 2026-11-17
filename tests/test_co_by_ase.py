@@ -23,5 +23,5 @@ def test_co() -> None:
     bl = pdist(atoms.positions).item()
     print(f"Energy: {e:.3f}eV")
     print(f"C=O Length: {bl:.3f}\u212b")
-    pytest.approx(1.3, bl, abs=0.02)
-    pytest.approx(-9.216011, e, abs=1.0e-3)
+    assert bl == pytest.approx(1.129, abs=0.02)
+    assert e == pytest.approx(-9.216011, abs=1.0e-3)
