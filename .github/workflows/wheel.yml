@@ -2,8 +2,8 @@ name: Build, Test & Publish to PyPI
 
 on:
   push:
-    tags:
-      - "v*"
+    # tags:
+    #   - "v*"
   workflow_dispatch: # build only, nothing is published
 
 jobs:
